@@ -44,7 +44,7 @@ public:
   bool VisitFunctionDecl(FunctionDecl *f) {
     if (f -> hasBody()) {
       if (f -> getNameInfo().getAsString() == topFuncName) {
-	TheRewriter.InsertText(f -> getLocStart(), header_template_str + "\n");
+	TheRewriter.InsertText(f -> getBeginLoc(), header_template_str + "\n");
 	Stmt *funcBody = f -> getBody();
 	Stmt *firstChild = *(funcBody -> child_begin());
 	std::string itcText = itc_template_str + "\n";
@@ -57,8 +57,8 @@ public:
 	}
 	itcText += "reset_sigs, reset_dram_helper_app, "
 	  "reset_pcie_helper_app, reset_pcie_data_splitter_app);\n\n";
-	TheRewriter.InsertText(firstChild -> getLocStart(), itcText);
-	TheRewriter.InsertText(funcBody -> getLocEnd().getLocWithOffset(-1), appCallExprText + "\n");
+	TheRewriter.InsertText(firstChild -> getBeginLoc(), itcText);
+	TheRewriter.InsertText(funcBody -> getEndLoc().getLocWithOffset(-1), appCallExprText + "\n");
       }
     }
     
@@ -116,7 +116,7 @@ private:
 	if (!strcmp(curStmt -> getStmtClassName(), "CallExpr")) {
 	  CallExpr *callExpr = (CallExpr *)curStmt;
 	  std::string origCallExprText = toString(callExpr);
-	  TheRewriter.RemoveText(SourceRange(callExpr -> getLocStart(), callExpr -> getLocEnd()));
+	  TheRewriter.RemoveText(SourceRange(callExpr -> getBeginLoc(), callExpr -> getEndLoc()));
 	  int firstLeftParenPos = origCallExprText.find("(");
 	  std::string calleeName = toString(callExpr -> getCallee());
 	  origCallExprText.replace(firstLeftParenPos, 1, "(reset_" + calleeName + ",");

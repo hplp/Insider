@@ -39,8 +39,8 @@ public:
     if (f -> hasBody()) {
       if (f -> getNameInfo().getAsString() == topFuncName) {
 	Stmt *funcBody = f -> getBody();
-	SourceLocation locStart = funcBody -> getLocStart();
-	SourceLocation locEnd = funcBody -> getLocEnd();	
+	SourceLocation locStart = funcBody -> getBeginLoc();
+	SourceLocation locEnd = funcBody -> getEndLoc();	
 	TheRewriter.RemoveText(SourceRange(locStart, locEnd));
 	std::string text;
 	text += "{\n" + beforeWhileText;
@@ -186,8 +186,8 @@ public:
   }
   
   std::string retrieveFilteredText(Stmt *lastStmt, Stmt *curStmt) {
-    SourceLocation locStart = lastStmt -> getLocEnd();
-    SourceLocation locEnd = curStmt -> getLocStart();
+    SourceLocation locStart = lastStmt -> getEndLoc();
+    SourceLocation locEnd = curStmt -> getBeginLoc();
     SourceManager &SM = TheRewriter.getSourceMgr();
     std::string text = std::string(SM.getCharacterData(locStart),
 				   SM.getCharacterData(locEnd) - SM.getCharacterData(locStart));
@@ -218,8 +218,8 @@ private:
   }
 
   std::string toRawString(Stmt *stmt) {
-    SourceLocation locStart = stmt -> getLocStart();
-    SourceLocation locEnd = stmt -> getLocEnd();
+    SourceLocation locStart = stmt -> getBeginLoc();
+    SourceLocation locEnd = stmt -> getEndLoc();
     SourceManager &SM = TheRewriter.getSourceMgr();
     std::string text = std::string(SM.getCharacterData(locStart),
 				   SM.getCharacterData(locEnd) - SM.getCharacterData(locStart));

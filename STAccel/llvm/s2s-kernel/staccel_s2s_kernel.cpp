@@ -30,8 +30,8 @@ public:
     if (f -> hasBody()) {
       if (f -> getNameInfo().getAsString() == topFuncName) {
 	Stmt *funcBody = f -> getBody();
-	SourceLocation locStart = funcBody -> getLocStart();
-	SourceLocation locEnd = funcBody -> getLocEnd();
+	SourceLocation locStart = funcBody -> getBeginLoc();
+	SourceLocation locEnd = funcBody -> getEndLoc();
 	TheRewriter.RemoveText(SourceRange(locStart, locEnd));
 	TheRewriter.InsertText(locStart , "{\n" + tbaText + "}", true, true);
       }

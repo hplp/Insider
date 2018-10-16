@@ -30,8 +30,8 @@ public:
     if (f -> hasBody()) {
       if (f -> getNameInfo().getAsString() == topFuncName) {
 	Stmt *funcBody = f -> getBody();
-	SourceLocation locStart = funcBody -> getLocStart();
-	SourceLocation locEnd = funcBody -> getLocEnd();
+	SourceLocation locStart = funcBody -> getBeginLoc();
+	SourceLocation locEnd = funcBody -> getEndLoc();
 	TheRewriter.RemoveText(SourceRange(locStart, locEnd));
 	TheRewriter.InsertText(locStart, "{\n" + tbaText + "}", true, true);
       }
@@ -123,8 +123,8 @@ public:
 	  if (curStmt) {
 	    if (!strcmp(curStmt -> getStmtClassName(), "CallExpr")) {
 	      CallExpr *callExpr = (CallExpr *)curStmt;
-	      SourceLocation locStart = callExpr -> getLocStart();
-	      SourceLocation locEnd = callExpr -> getLocEnd();
+	      SourceLocation locStart = callExpr -> getBeginLoc();
+	      SourceLocation locEnd = callExpr -> getEndLoc();
 	      TheRewriter.RemoveText(SourceRange(locStart, locEnd.getLocWithOffset(1)));
 	      interconnectText += toString(callExpr) + ";\n";
 	    }

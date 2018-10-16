@@ -37,12 +37,12 @@ public:
     if (f -> hasBody()) {      
       if (f -> getNameInfo().getAsString() == topFuncName) {
 	DeclarationNameInfo funcName = f -> getNameInfo();
-	TheRewriter.RemoveText(SourceRange(funcName.getLocStart(), funcName.getLocEnd()));
-	TheRewriter.InsertText(funcName.getLocStart(), "main", true, true);	
+	TheRewriter.RemoveText(SourceRange(funcName.getBeginLoc(), funcName.getEndLoc()));
+	TheRewriter.InsertText(funcName.getBeginLoc(), "main", true, true);	
 	TheRewriter.RemoveText(f -> getReturnTypeSourceRange());
 	TheRewriter.InsertText((f -> getReturnTypeSourceRange()).getBegin(), "int", true, true);
 	Stmt *funcBody = f -> getBody();
-	SourceLocation locEnd = funcBody -> getLocEnd();
+	SourceLocation locEnd = funcBody -> getEndLoc();
 	TheRewriter.InsertText(locEnd.getLocWithOffset(-1), tbaText, true, true);
 	TheRewriter.InsertText(locEnd.getLocWithOffset(-1), "\nsimulator();while(1);", true, true);
 	TheRewriter.InsertText(locEnd.getLocWithOffset(1), "\n\nvoid user_simulation_function() {\n// PUT YOUR CODE HERE\n\nwhile(1);\n}", true, true);
@@ -71,8 +71,8 @@ public:
 	  if (curStmt) {
 	    if (!strcmp(curStmt -> getStmtClassName(), "CallExpr")) {
 	      CallExpr *callExpr = (CallExpr *)curStmt;
-	      SourceLocation locStart = callExpr -> getLocStart();
-	      SourceLocation locEnd = callExpr -> getLocEnd();
+	      SourceLocation locStart = callExpr -> getBeginLoc();
+	      SourceLocation locEnd = callExpr -> getEndLoc();
 	      TheRewriter.RemoveText(SourceRange(locStart, locEnd.getLocWithOffset(1)));
 	      std::string textDeclThread = "std::thread t" + std::to_string(threadCnt ++);
 	      text += textDeclThread;
