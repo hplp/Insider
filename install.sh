@@ -9,6 +9,9 @@ if [ -z "$LLVM_BUILD_PATH" ]; then
 fi
 
 orig_path=`pwd`
+
+sudo cp patch/boost/queue.hpp /usr/include/boost/lockfree
+
 sudo mkdir /usr/include/staccel
 sudo cp STAccel/inc/staccel* /usr/include/staccel
 sudo cp -r STAccel/inc/hls_csim /usr/include
@@ -50,4 +53,5 @@ cd $LLVM_BUILD_PATH
 cmake3 $LLVM_SRC_PATH
 make -j16
 make install
+
 cd $orig_path
