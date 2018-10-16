@@ -20,7 +20,7 @@ if [ ! -d "/usr/include/insider" ];then
     exit 1
 fi
 
-if [ ! -d "/usr/share/insider/synthesis/kernels" ];then
+if [ ! -d "/usr/insider/synthesis/kernels" ];then
     echo "Error: Cannot find the insider shared synthesis kernels folder!"
     exit 1
 fi
