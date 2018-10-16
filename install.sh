@@ -20,6 +20,9 @@ sudo cp STAccel/shell/* /usr/bin
 
 sudo mkdir /usr/include/insider
 sudo cp Insider/inc/* /usr/include/insider
+sudo mkdir /usr/insider
+sudo cp Insider/cosim/* /usr/insider/
+sudo cp Insider/synthesis/* /usr/insider/
 g++ Insider/src/insider_reset_syn.cpp -std=c++11 -O3 \
     -o insider_reset_syn
 sudo mv insider_reset_syn /usr/bin
