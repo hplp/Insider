@@ -45,7 +45,7 @@ done
 insider_interconnect interconnects.cpp $kernelSources -- -I/usr/include/staccel -I/usr/include/insider -I/usr/include/hls_csim -I kernels -I inc -DINSIDER_COMPILER \
     | clang-format --style=llvm 1>staccel/interconnects.cpp &
 
-cp /usr/share/insider/synthesis/kernels/* staccel/kernels
+cp /usr/insider/synthesis/kernels/* staccel/kernels
 
 for kernelSource in $kernelSources;
 do

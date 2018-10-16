@@ -49,6 +49,5 @@ cp -r STAccel/llvm/* $LLVM_SRC_PATH/tools/clang/tools
 cd $LLVM_BUILD_PATH
 cmake3 $LLVM_SRC_PATH
 make -j16
-sudo cp bin/insider* /usr/bin
-sudo cp bin/staccel* /usr/bin
+make install
 cd $orig_path
