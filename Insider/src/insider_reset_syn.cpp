@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     kernelNameVec.push_back(getKernelName(std::string(argv[i])));
   }
 
-  std::ifstream ifs_template("/usr/share/insider/synthesis/template/reset_template.txt");
+  std::ifstream ifs_template("/usr/insider/synthesis/template/reset_template.txt");
   std::string s;
   while (std::getline(ifs_template, s)) {
     cout << s << endl;

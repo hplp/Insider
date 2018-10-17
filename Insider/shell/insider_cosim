@@ -20,8 +20,8 @@ if [ ! -d "/usr/include/insider" ];then
     exit 1
 fi
 
-if [ ! -d "/usr/share/insider/cosim/kernels" ];then
-    echo "Error: Cannot find the insider shared cosim kernels folder!"
+if [ ! -d "/usr/insider/cosim/kernels" ];then
+    echo "Error: Cannot find the insidercosim kernels folder!"
     exit 1
 fi
 
@@ -45,7 +45,7 @@ done
 insider_cosim_intc interconnects.cpp $kernelSources -- -I/usr/include/staccel -I/usr/include/insider -I kernels -I inc -I/usr/include/hls_csim -DINSIDER_COMPILER \
     | clang-format --style=llvm 1>cosim/interconnects.cpp
 
-cp /usr/share/insider/cosim/kernels/* cosim/kernels
+cp /usr/insider/cosim/kernels/* cosim/kernels
 
 for kernelSource in $kernelSources;
 do
@@ -59,6 +59,6 @@ wait
 cd cosim
 staccel_syn
 rm -rf project/software/verif_rtl
-sudo cp -r /usr/share/insider/cosim/verif project/software/verif_rtl
+sudo cp -r /usr/insider/cosim/verif project/software/verif_rtl
 sudo chown centos:centos -R project/software/verif_rtl
 cd ..

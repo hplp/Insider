@@ -171,9 +171,9 @@ private:
 };
 
 void loadTemplate() {
-  std::ifstream itc_istream("/usr/share/insider/cosim/template/itc_template_itc.txt",
+  std::ifstream itc_istream("/usr/insider/cosim/template/itc_template_itc.txt",
 			    std::ifstream::in);
-  std::ifstream header_istream("/usr/share/insider/cosim/template/itc_template_header.txt",
+  std::ifstream header_istream("/usr/insider/cosim/template/itc_template_header.txt",
 			       std::ifstream::in);
   std::string s;
   while (std::getline(itc_istream, s)) {
