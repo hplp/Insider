@@ -16,7 +16,7 @@ sudo mkdir /usr/include/staccel
 sudo cp STAccel/inc/staccel* /usr/include/staccel
 sudo cp -r STAccel/inc/hls_csim /usr/include
 sudo mkdir /usr/staccel/
-sudo cp STAccel/template /usr/staccel
+sudo cp -r STAccel/template /usr/staccel
 g++ STAccel/src/iopinChecker.cpp -std=c++11 -O3 \
     -o staccel_syn
 sudo mv staccel_syn /usr/bin
