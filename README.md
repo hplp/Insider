@@ -62,3 +62,6 @@ $ make -j16 # Replace 16 with the number of cores of your instance
 ## BUILD & Installation
 
 The build and installation of Insider is easy: just simply execute the install.sh script.
+```
+$ chmod a+x install.sh; ./install.sh
+```
