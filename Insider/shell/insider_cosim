@@ -21,7 +21,7 @@ if [ ! -d "/usr/include/insider" ];then
 fi
 
 if [ ! -d "/usr/insider/cosim/kernels" ];then
-    echo "Error: Cannot find the insidercosim kernels folder!"
+    echo "Error: Cannot find the insider cosim kernels folder!"
     exit 1
 fi
 
