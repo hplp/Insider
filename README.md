@@ -27,6 +27,7 @@ For both instances, you should use the FPGA developer AMI, which can be found at
 First, you need to clone the latest AWS FPGA repository.
 ```
 [~]$ git clone https://github.com/aws/aws-fpga.git
+[~]$ cd aws-fpga; git checkout v1.3.8
 ```
 Next, add the following commands into the rc file of your shell. For example, if you use bash, please append the followings into ~/.bashrc.
 ```
