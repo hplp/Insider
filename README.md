@@ -52,6 +52,13 @@ Finally reboot your system and verify that your kernel version is >= 4.14.0.
 [~]$ uname -r
 ```
 
+### Boost
+
+Install the boost library.
+```
+$ sudo yum install boost-devel
+```
+
 ### LLVM & Clang
 
 Some functionality of Insider compiler is implemented based on LLVM and Clang, which should be built first.
