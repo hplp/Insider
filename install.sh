@@ -10,6 +10,8 @@ fi
 
 orig_path=`pwd`
 
+sudo cp license/XilinxAWS.lic /opt/Xilinx/license/XilinxAWS.lic
+
 sudo cp patch/boost/queue.hpp /usr/include/boost/lockfree
 
 sudo mkdir /usr/include/staccel
