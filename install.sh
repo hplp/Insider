@@ -18,8 +18,8 @@ sudo cp -r STAccel/inc/hls_csim /usr/include
 sudo mkdir /usr/staccel/
 sudo cp -r STAccel/template /usr/staccel
 g++ STAccel/src/iopinChecker.cpp -std=c++11 -O3 \
-    -o staccel_syn
-sudo mv staccel_syn /usr/bin
+    -o staccel_pinckr
+sudo mv staccel_pinckr /usr/bin
 sudo cp STAccel/shell/* /usr/bin
 
 sudo mkdir /usr/include/insider
