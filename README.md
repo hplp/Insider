@@ -12,11 +12,15 @@ This is the AWS F1 version of Insider system. Since F1 does not open the partial
 
 You typically needs two EC2 instances: 
 
-(1) Used for code compilation and FPGA binary generation. This could be any type of EC2 instance as long as it has enough VCPU and RAM to run Xilinx Vivado for FPGA synthesis. For example, you can choose c4.4xlarge.
+  (1) Used for code compilation and FPGA binary generation. This could be any type of EC2 instance as long as it has enough VCPU and RAM to run Xilinx Vivado for FPGA synthesis. For example, you can choose c4.4xlarge.
 
-(2) Used for running the Insider system. This should be a FPGA instance, for example, f1.2xlarge.
+  (2) Used for running the Insider system. This should be a FPGA instance, for example, f1.2xlarge.
 
-For both instances, you should use the FPGA developer AMI, which can be found at the AWS Marketplace when you launching a new instance. Make sure that you configure the compilation instance to have more than 500 GB storage.
+For both instances, you should use the FPGA developer AMI, which can be found at the AWS Marketplace when you launching a new instance. There are two caveats.
+
+  (1) Make sure you choose the AMI version as 1.3.3. It could be found at the panel of "FPGA Developer AMI" via Previous versions -> Continue to Configuration. The reason behinds this is that the newer version of AMI adopts more recent Vivado HLS tool, which has significant lower performance in synthesizing some of our kernels.
+  
+  (2) Make sure that you configure the compilation instance to have more than 500 GB storage.
 
 ### AWS FPGA Toolchain
 
