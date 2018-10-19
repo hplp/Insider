@@ -8,11 +8,17 @@ if [ -z "$LLVM_BUILD_PATH" ]; then
     exit 1
 fi
 
+if [ -z "$AWS_FPGA_PATH" ]; then
+    echo "Need to set AWS_FPGA_PATH"
+    exit 1
+fi
+
 orig_path=`pwd`
 
 sudo cp license/XilinxAWS.lic /opt/Xilinx/license/XilinxAWS.lic
 
 sudo cp patch/boost/queue.hpp /usr/include/boost/lockfree
+sudo cp patch/aws/sh_bfm.sv $AWS_FPGA_PATH/hdk/common/verif/models/sh_bfm
 
 sudo mkdir /usr/include/staccel
 sudo cp STAccel/inc/staccel* /usr/include/staccel
