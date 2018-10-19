@@ -15,7 +15,7 @@ fi
 
 orig_path=`pwd`
 
-sudo cp license/XilinxAWS.lic /opt/Xilinx/license/XilinxAWS.lic
+sudo cp lic/XilinxAWS.lic /opt/Xilinx/license/XilinxAWS.lic
 
 sudo cp patch/boost/queue.hpp /usr/include/boost/lockfree
 sudo cp patch/aws/cosim/sh_bfm.sv $AWS_FPGA_PATH/hdk/common/verif/models/sh_bfm
