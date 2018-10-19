@@ -18,7 +18,9 @@ orig_path=`pwd`
 sudo cp license/XilinxAWS.lic /opt/Xilinx/license/XilinxAWS.lic
 
 sudo cp patch/boost/queue.hpp /usr/include/boost/lockfree
-sudo cp patch/aws/sh_bfm.sv $AWS_FPGA_PATH/hdk/common/verif/models/sh_bfm
+sudo cp patch/aws/cosim/sh_bfm.sv $AWS_FPGA_PATH/hdk/common/verif/models/sh_bfm
+sudo cp patch/aws/runtime/fpga_pci.h $AWS_FPGA_PATH/sdk/userspace/include/fpga_pci.h
+sudo cp patch/aws/runtime/fpga_pci.c $AWS_FPGA_PATH/sdk/userspace/fpga_libs/fpga_pci/fpga_pci.c
 
 sudo mkdir /usr/include/staccel
 sudo cp STAccel/inc/staccel* /usr/include/staccel
