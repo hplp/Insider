@@ -39,7 +39,6 @@ const char DF_CMD[] = "df ";
 const char DF_FILTER_CMD[] = " | sed \"2, 2p\" -n | awk '{print $1}'";
 const char LS_CMD[] = "ls -l ";
 const char LS_FILTER_CMD[] = " | awk '{print $5}'";
-const char XFS_FSR_CMD[] = "xfs_fsr ";
 const char TOUCH_CMD[] = "touch ";
 
 int mmio_fd;
@@ -79,20 +78,6 @@ static void get_file_info(const char *real_file_name,
   FILE *fp;
   char *buf = malloc(MAX_CMD_OUTPUT_LEN);
   char *cmd = malloc(MAX_CMD_LEN);
-   
-  // execute xfs_fsr
-  cmd[0] = 0;
-  strcat(cmd, XFS_FSR_CMD);
-  strcat(cmd, real_file_name);
-  fp = popen(cmd, "r");
-  fgets(buf, MAX_CMD_OUTPUT_LEN, fp);
-  if (fp) pclose(fp);
-  if (!strncmp(buf, "unable", 6)) {
-    puts("Fail to execute xfs_fsr! Check your authority.");
-    free(buf);
-    free(cmd);
-    exit(-1);
-  }
 
   // get file extents
   cmd[0] = 0;
