@@ -18,7 +18,7 @@ You typically needs two EC2 instances:
 
 For both instances, you should use the FPGA developer AMI, which can be found at the AWS Marketplace when you launching a new instance. There are two caveats.
 
-  (1) Make sure you choose the AMI version as 1.3.3. It could be found at the panel of "FPGA Developer AMI" via Previous versions -> Continue to Configuration. The reason behinds this is that the newer version of AMI adopts more recent Vivado HLS tool, which has significant lower performance in synthesizing some of our kernels.
+  (1) Make sure you choose the AMI version as 1.3.3. It could be found at the panel of "FPGA Developer AMI" via `Previous versions -> Continue to Configuration`. The reason behinds this is that the newer version of AMI adopts more recent Vivado HLS tool, which has significant lower performance in synthesizing some of our kernels.
   
   (2) Make sure that you configure the compilation instance to have more than 500 GB storage.
   
@@ -76,7 +76,7 @@ $ make -j16 # Replace 16 with the number of cores of your instance
 
 ## BUILD & Installation
 
-The build and installation of Insider is easy. First, you need to set the environment variable LLVM_SRC_PATH to the path of the llvm source, and set LLVM_BUILD_PATH to the path of the llvm build folder. After that, execute the install.sh script.
+The build and installation of Insider is easy. First, you need to set the environment variable `LLVM_SRC_PATH` to the path of the llvm source, and set `LLVM_BUILD_PATH` to the path of the llvm build folder. After that, execute the `install.sh` script.
 ```
 $ export LLVM_SRC_PATH=PATH TO THE LLVM SOURCE
 $ export LLVM_BUILD_PATH=PATH TO THE LLVM BUILD FOLDER
@@ -87,12 +87,15 @@ Finally, please logout and relogin.
 ## Usage
 
 ### Compiling Device Code
-We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at apps/device. Take "grep" for example, first execute insider device compiler to generate an STAccel project folder.
+
+Caveat: you should perform all the compilation related stuff at the compilation instance to save your cost (since the FPGA instance is expensive!).
+
+We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at `apps/device`. Take "grep" for example, first execute insider device compiler to generate an STAccel project folder.
 ```
 $ cd apps/device/grep
 $ insider_device_compiler
 ```
-Next, use STAccel toolchain to generate a AWS-compatible RTL project folder. It will generate a report of the pipeline performance of each kernel. Make sure that every kernel has final II (Initiation Interval) equals to one, which means that the kernel will be reinvoked every clock cycle. Thus, if II equals two, the performance will degrade into the half.
+Next, use STAccel toolchain to generate a AWS-compatible RTL project folder. It will generate a report of the pipeline performance of each kernel. Make sure that every kernel has final II (Initiation Interval) equals to one, which means that the kernel will be reinvoked every clock cycle (and achieve the best performance). Thus, if II equals two, the performance will degrade into the half.
 ```
 $ cd staccel
 $ staccel_syn
@@ -109,7 +112,17 @@ After that, update your tarball (locates at project/build/checkpoints/to_aws) in
 
 ### Compiling Host Code
 
+The host code is located at a`pps/host`. For each application, we provide two version of host code: the offloading version and the pure-cpu version. Take "grep" for example, you will find `apps/host/grep/src/offload` and `apps/host/grep/src/pure_cpu`. The pure-cpu version can be directly compiled normally via `g++`. The offloading version should be compiler via `insider_host_g++` or `insider_host_gcc` depending whether it's written in C++ or C. For the "grep" case, you should invoke the following command:
+
+```
+$ cd apps/host/grep/src/offload
+$ insider_host_g++ -O3 grep.cpp -o grep
+```
+
 ### Executing
+
+All the commands in the section should be performed at the FPGA instance, i.e., AWS F1.
+
 
 ### C Simulation
 
