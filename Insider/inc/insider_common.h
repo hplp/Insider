@@ -31,8 +31,8 @@
 #define DATA_BUS_WIDTH (0x40)
 #define DATA_BUS_WIDTH_LOG2 (6)
 #define ALLOCATED_BUF_NUM (8) // should be the power of 2
-#define PCIE_WRITE_BATCH_NUM (0x10) // should be the power of 2
-#define DRAM_READ_BATCH_NUM (0x10)
+#define PCIE_WRITE_BATCH_NUM (0x40) // should be the power of 2
+#define DRAM_READ_BATCH_NUM (0x40)
 #define RESET_CNT (2048)
 
 struct Request {
