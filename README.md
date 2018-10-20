@@ -108,7 +108,10 @@ You can track the progress via tailing the log file. The synthesis usually takes
 ```
 $ tail -f project/build/scripts/last_log
 ```
-After that, update your tarball (locates at project/build/checkpoints/to_aws) into AWS S3 and start AFI creation. This corresponds the [step 3](https://github.com/aws/aws-fpga/tree/master/hdk#step3) in the AWS F1 tutorial above. The device code compilation ends here; you don't need to go beyond step 3 in their tutorial.
+After that, update your tarball (locates at project/build/checkpoints/to_aws) into AWS S3 and start AFI creation. This corresponds the [step 3](https://github.com/aws/aws-fpga/tree/master/hdk#step3) in the AWS F1 tutorial above. The device code compilation ends here; you don't need to go beyond step 3 in their tutorial. You can use the following command to check whether the image generation has finished.
+```
+$ aws ec2 describe-fpga-images --fpga-image-ids AFI_ID
+```
 
 ### Compiling Host Code
 
@@ -122,7 +125,19 @@ $ insider_host_g++ -O3 grep.cpp -o grep
 ### Executing
 
 All the commands in the section should be performed at the FPGA instance, i.e., AWS F1.
-
+First, use `load_image.sh` in this repository to install your previously generated image via its `AGFI_ID`.
+```
+$ ./load_image.sh AGFI_ID
+```
+If there's no error message (there will be some log which is fine), you will find a 64GiB-size Insider drive is mounted at `/mnt`. 
+Take "grep" for example, now you can use the data generator provided in `apps/host/grep/data_gen` to generate the input data (which is served as the raw real file).
+```
+$ cd apps/host/grep/data_gen
+$ ./compile.sh
+$ ./data_gen # This step takes some time since we generate near 60GiB-size input.
+$ cp grep_input.txt /mnt
+```
+Now you can run the host program. You can run the offloading version and the pure-cpu version separately to see the performance difference.
 
 ### C Simulation
 
