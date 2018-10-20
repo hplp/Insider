@@ -112,7 +112,7 @@ After that, update your tarball (locates at project/build/checkpoints/to_aws) in
 
 ### Compiling Host Code
 
-The host code is located at a`pps/host`. For each application, we provide two version of host code: the offloading version and the pure-cpu version. Take "grep" for example, you will find `apps/host/grep/src/offload` and `apps/host/grep/src/pure_cpu`. The pure-cpu version can be directly compiled normally via `g++`. The offloading version should be compiler via `insider_host_g++` or `insider_host_gcc` depending whether it's written in C++ or C. For the "grep" case, you should invoke the following command:
+The host code is located at `apps/host`. For each application, we provide two version of host code: the offloading version and the pure-cpu version. Take "grep" for example, you will find `apps/host/grep/src/offload` and `apps/host/grep/src/pure_cpu`. The pure-cpu version can be directly compiled normally via `g++`. The offloading version should be compiler via `insider_host_g++` or `insider_host_gcc` depending whether it's written in C++ or C. For the "grep" case, you should invoke the following command:
 
 ```
 $ cd apps/host/grep/src/offload
