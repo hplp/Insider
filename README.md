@@ -121,6 +121,7 @@ The host code is located at `apps/host`. For each application, we provide two ve
 $ cd apps/host/grep/src/offload
 $ insider_host_g++ -O3 grep.cpp -o grep
 ```
+If you see error message like `relocation truncated to fit:`, please append the compilation flag `-mcmodel=medium`.
 
 ### Executing
 
