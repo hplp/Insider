@@ -42,7 +42,7 @@ void read_data(void) {
   char *read_buf = (char *)&buf;
   int read_buf_cnt = 0;
 
-  while (read_buf_cnt != FILE_ROW_NUM * FILE_COL_NUM / READ_BUF_SIZE) {
+  while (read_buf_cnt != (unsigned long long)FILE_ROW_NUM * FILE_COL_NUM / READ_BUF_SIZE) {
     int read_bytes = 0;
     while (read_bytes != READ_BUF_SIZE) {
       read_bytes += read(fd, read_buf, READ_BUF_SIZE - read_bytes);
@@ -82,7 +82,7 @@ void matching() {
 	}
 	if (matched) {
 	  result[i] = j;
-	  cout << "Matched at i = " << i << ", j = " << j << endl;
+	  // cout << "Matched at i = " << i << ", j = " << j << endl;
 	  break;
 	}
       }
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
   read_data();
   cout << "elapsed time = " << timer.elapsed() / 1000 << endl;
 
-  puts("matching().....");
+  puts("generate_compared_str().....");
   timer.reset();
   generate_compared_str();
   cout << "elapsed time = " << timer.elapsed() / 1000 << endl;

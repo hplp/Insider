@@ -70,7 +70,7 @@ void read_data(void) {
   char read_buf[READ_BUF_SIZE];
   int read_cnt = 0;
 
-  while (read_cnt != ROW_NUM * ROW_LEN / READ_BUF_SIZE) {
+  while (read_cnt != (unsigned long long)ROW_NUM * ROW_LEN / READ_BUF_SIZE) {
     int read_bytes = 0;
     while (read_bytes != READ_BUF_SIZE) {
       read_bytes += read(fd, read_buf, READ_BUF_SIZE - read_bytes);

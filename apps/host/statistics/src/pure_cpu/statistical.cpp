@@ -46,7 +46,7 @@ void read_data(void) {
     unsigned int *input_buf_ptr = (unsigned int *)&input_buf;
     char read_buf[READ_BUF_SIZE];
     int read_cnt = 0;  
-    while (read_cnt != COL_NUM * ROW_NUM / READ_BUF_SIZE) {
+    while (read_cnt != (unsigned long long)COL_NUM * ROW_NUM / READ_BUF_SIZE) {
         int read_bytes = 0;
         while (read_bytes != READ_BUF_SIZE) {
             read_bytes += read(fd, read_buf, READ_BUF_SIZE - read_bytes);
@@ -71,7 +71,7 @@ void calculation() {
             v_min = min(v_min, cur);
             v_sum += cur;
         }
-        cout << "v_max = " << v_max << ", v_min = " << v_min << " , v_avg = " << v_sum / NUMBER_PER_ROW << endl;
+        // cout << "v_max = " << v_max << ", v_min = " << v_min << " , v_avg = " << v_sum / NUMBER_PER_ROW << endl;
     }
 }
 

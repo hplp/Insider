@@ -52,17 +52,11 @@ int *expected_buf_ptr_in_4B;
 int validFeatureNum = 0;
 
 int gen_data() {
-    int fd = open("/mnt/query_data.txt", O_RDWR);
-    int readBytes = read(fd, (char *) query[0], APP_QUERY_NUM * APP_FEATURE_DIM * sizeof(int));
-    if (readBytes != APP_QUERY_NUM * APP_FEATURE_DIM * sizeof(int)) {
-        cout << "ERROR: query set mismatch" << endl;
+    for (int i = 0; i < APP_QUERY_NUM; i++) {
+       for (int j = 0; j < APP_FEATURE_DIM; j ++) {
+           query[i][j] = rand() % 10;
+       }
     }
-    close(fd);
-    //for (int i = 0; i < APP_QUERY_NUM; i++) {
-    //    for (int j = 0; j < APP_FEATURE_DIM; j ++) {
-    //        query[i][j] = rand() % 10;
-    //    }
-    //}
 }
 void init() {
     gen_data();

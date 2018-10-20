@@ -36,12 +36,6 @@ long timer_end(struct timespec start_time){
 int query[APP_QUERY_NUM][APP_FEATURE_DIM];
 
 int gen_data() {
-    //int fd = open("/mnt/query_data.txt", O_RDWR);
-    //int readBytes = read(fd, (char *) query[0], APP_QUERY_NUM * APP_FEATURE_DIM * sizeof(int));
-    //if (readBytes != APP_QUERY_NUM * APP_FEATURE_DIM * sizeof(int)) {
-    //    cout << "ERROR: query set mismatch" << endl;
-    //}
-    //close(fd);
     for (int i = 0; i < APP_QUERY_NUM; i++) {
         for (int j = 0; j < APP_FEATURE_DIM; j ++) {
             query[i][j] = rand() % 10;
