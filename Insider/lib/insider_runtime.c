@@ -16,7 +16,6 @@
 #define ALLOCATED_BUF_NUM (8)
 #define VIRT_FILE_FD (0xFFFF)
 #define BUF_METADATA_IDX (1 << 21)
-#define FPGA_MMIO_ADDR (0x82000000)
 #define MAX_EXTENT_NUM (32)
 #define PHYSICAL_SECTOR_SIZE (4096)
 
@@ -194,11 +193,11 @@ static void *allocate_kernel_buf(int *configfd) {
 }
 
 static void setup_mmio(void) {
-  mmio_fd = open("/dev/mem", O_RDWR);
+  mmio_fd = open("/sys/devices/pci0000:00/0000:00:1d.0/resource0", O_RDWR);
   if (mmio_fd < 0) {
     perror("Error for mmapping the mmio region,");
   }
-  mmio_space = mmap(NULL, MMIO_SPACE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, mmio_fd, FPGA_MMIO_ADDR);
+  mmio_space = mmap(NULL, MMIO_SPACE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, mmio_fd, 0);
   if (mmio_space == MAP_FAILED) {
     perror("Mmap operation failed.");
     exit(-1);

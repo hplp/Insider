@@ -60,4 +60,10 @@ sudo mount /dev/nvme_fpga /mnt \
     || { echo 'mount failed!'; exit 1;}
 
 sudo chown centos:centos -R /mnt \
-    || { echo 'chown failed!'; exit 1;}
+    || { echo 'chown /mnt failed!'; exit 1;}
+
+sudo chown centos:centos /sys/devices/pci0000:00/0000:00:1d.0/resource0 \
+    || { echo 'chown FPGA PCIe device failed!'; exit 1;}
+
+sudo chown centos:centos /dev/fpga_dma \
+    || { echo 'chown /dev/fpga_dma failed!'; exit 1;}
