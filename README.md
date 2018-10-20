@@ -14,7 +14,7 @@ You typically needs two EC2 instances:
 
   (1) Used for code compilation and FPGA binary generation. This could be any type of EC2 instance as long as it has enough VCPU and RAM to run Xilinx Vivado for FPGA synthesis. For example, you can choose c4.4xlarge.
 
-  (2) Used for running the Insider system. This should be a FPGA instance, for example, f1.2xlarge.
+  (2) Used for running the Insider system. This should be an FPGA instance, for example, f1.2xlarge.
 
 For both instances, you should use the FPGA developer AMI, which can be found at the AWS Marketplace when you launching a new instance. There are two caveats.
 
@@ -87,6 +87,25 @@ Finally, please logout and relogin.
 ## Usage
 
 ### Compiling Device Code
+We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at apps/device. Take "grep" for example, first execute insider device compiler to generate an STAccel project folder.
+```
+$ cd apps/device/grep
+$ insider_device_compiler
+```
+Next, use STAccel toolchain to generate a AWS-compatible RTL project folder. It will generate a report of the pipeline performance of each kernel. Make sure that every kernel has final II (Initiation Interval) equals to one, which means that the kernel will be reinvoked every clock cycle. Thus, if II equals two, the performance will degrade into the half.
+```
+$ cd staccel
+$ staccel_syn
+```
+Then, You can simply follow the [standard process in AWS F1](https://github.com/aws/aws-fpga/tree/master/hdk#step2) to continue. Simply invoke the script to trigger the Vivado suite to synthesize the project.
+```
+$ project/build/scripts/aws_build_dcp_from_cl.sh
+```
+You can track the progress via tailing the log file. The synthesis usually takes about three hours. 
+```
+$ tail -f project/build/scripts/last_log
+```
+After that, update your tarball (locates at project/build/checkpoints/to_aws) into AWS S3 and start AFI creation. This corresponds the [step 3](https://github.com/aws/aws-fpga/tree/master/hdk#step3) in the AWS F1 tutorial above. The device code compilation ends here; you don't need to go beyond step 3 in their tutorial.
 
 ### Compiling Host Code
 
@@ -95,6 +114,4 @@ Finally, please logout and relogin.
 ### C Simulation
 
 ### C-RTL Co-Simulation
-
-
 
