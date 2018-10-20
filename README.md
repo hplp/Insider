@@ -46,6 +46,7 @@ To reflect the performance in the latest system, we adapt the Insider drivers to
 [~]$ sudo rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 [~]$ sudo rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
 [~]$ sudo yum --enablerepo=elrepo-kernel install kernel-ml
+[~]$ sudo yum --enablerepo=elrepo-kernel -y swap kernel-headers -- kernel-ml-headers
 [~]$ sudo grub2-mkconfig -o /boot/grub/grub.conf
 [~]$ sudo grub2-set-default 0
 ```
@@ -81,3 +82,19 @@ $ export LLVM_SRC_PATH=PATH TO THE LLVM SOURCE
 $ export LLVM_BUILD_PATH=PATH TO THE LLVM BUILD FOLDER
 $ chmod a+x install.sh; ./install.sh
 ```
+Finally, please logout and relogin. 
+
+## Usage
+
+### Compiling Device Code
+
+### Compiling Host Code
+
+### Executing
+
+### C Simulation
+
+### C-RTL Co-Simulation
+
+
+
