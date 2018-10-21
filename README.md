@@ -2,9 +2,30 @@
 ![Status](https://img.shields.io/badge/Version-Experimental-green.svg)
 ![License](https://img.shields.io/cran/l/devtools.svg)
 
-## Restriction
+## Table of Contents
 
-This is the AWS F1 version of Insider system. Since F1 does not open the partial reconfiguration interface to users, this version does not support dynamically reload the in-storage accelerators. Anytime when you wish to switch to a new accelerator, you need to reprogram the whole FPGA.
+- [SECRET](#secret)
+  * [Restrictions](#restrictions)
+  * [Preliminaries](#preliminaries)
+    + [AWS EC2](#aws-ec2)
+    + [AWS FPGA Toolchain](#aws-fpga-toolchain)
+    + [Linux Kernel](#linux-kernel)
+    + [Boost](#boost)
+    + [LLVM and Clang](#llvm-and-clang)
+  * [BUILD and Installation](#build-and-installation)
+  * [Usage](#usage)
+    + [Compiling Device Code](#compiling-device-code)
+    + [Compiling Host Code](#compiling-host-code)
+    + [Configuring Drive Parameters](#configuring-drive-parameters)
+    + [Executing](#executing)
+    + [C Simulation](#c-simulation)
+    + [C-RTL Co-Simulation](#c-rtl-co-simulation)
+
+## Restrictions
+
+1. This is the AWS F1 version of Insider system. Since F1 does not open the partial reconfiguration interface to users, this version does not support dynamically reload the in-storage accelerators. Anytime when you wish to switch to a new accelerator, you need to reprogram the whole FPGA.
+
+2. This version does not support simultaneous multiple applications. We will provide a separate github repository to support that.
 
 ## Preliminaries
 
@@ -47,6 +68,7 @@ To reflect the performance in the latest system, we adapt the Insider drivers to
 [~]$ sudo rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
 [~]$ sudo yum --enablerepo=elrepo-kernel install kernel-ml
 [~]$ sudo yum --enablerepo=elrepo-kernel -y swap kernel-headers -- kernel-ml-headers
+[~]$ sudo yum install --skip-broken --enablerepo=elrepo-kernel kernel-ml-devel
 [~]$ sudo grub2-mkconfig -o /boot/grub/grub.conf
 [~]$ sudo grub2-set-default 0
 ```
@@ -62,7 +84,7 @@ Install the boost library.
 $ sudo yum install boost-devel
 ```
 
-### LLVM & Clang
+### LLVM and Clang
 
 Some functionality of Insider compiler is implemented based on LLVM and Clang, which should be built first.
 ```
@@ -74,7 +96,7 @@ $ cd PATH_TO_LLVM; mkdir build; cd build; cmake3 PATH_TO_LLVM/llvm
 $ make -j16 # Replace 16 with the number of cores of your instance
 ```
 
-## BUILD & Installation
+## BUILD and Installation
 
 The build and installation of Insider is easy. First, you need to set the environment variable `LLVM_SRC_PATH` to the path of the llvm source, and set `LLVM_BUILD_PATH` to the path of the llvm build folder. After that, execute the `install.sh` script.
 ```
@@ -121,6 +143,29 @@ The host code is located at `apps/host`. For each application, we provide two ve
 $ cd apps/host/grep/src/offload
 $ insider_host_g++ -O3 grep.cpp -o grep
 ```
+If you see error message like `relocation truncated to fit:`, please append the compilation flag `-mcmodel=medium`.
+
+### Configuring Drive Parameters
+
+All system parameters are listed at `/driver/nvme/const.h`.
+
+|Parameters|Formats|Comments|
+|-----------|---------|--------|
+|HOST_DELAY_CYCLE_CNT|(X)|Instructs X delaying cycles at the interconnection (note that <br/>setting X to zero does not mean the interconnection delay <br/>would be zero since it has the inherent hardware delay).|
+|HOST_READ_THROTTLE_PARAM|((X << 16) \| Y)|Throttles the interconnection read bandwidth into X / (X + Y) <br/>of the original unthrottled value.|
+|HOST_WRITE_THROTTLE_PARAM|((X << 16) \| Y)|Ditto, but throttles the write bandwidth.|
+|DEVICE_DELAY_CYCLE_CNT|(X)|Instructs X delaying cycles at the internal storage (note that <br/>setting X to zero does not mean the interconnection delay <br/>would be zero since it has the inherent hardware delay).|
+|DEVICE_READ_THROTTLE_PARAM|((X << 16) \| Y)|Throttles the internal storage read bandwidth into X / (X + Y)<br/> of the original unthrottled value.|
+|DEVICE_WRITE_THROTTLE_PARAM|((X << 16) \| Y)|Ditto, but throttles the write bandwidth.|
+
+For example, you can set the following values:
+```
+...
+#define HOST_READ_THROTTLE_PARAM ((9 << 16) | 13)
+...
+#define DEVICE_DELAY_CYCLE_CNT (2500)
+...
+```
 
 ### Executing
 
@@ -130,7 +175,9 @@ First, use `load_image.sh` in this repository to install your previously generat
 $ ./load_image.sh AGFI_ID
 ```
 If there's no error message (there will be some log which is fine), you will find a 64GiB-size Insider drive is mounted at `/mnt`. 
-Take "grep" for example, now you can use the data generator provided in `apps/host/grep/data_gen` to generate the input data (which is served as the raw real file).
+Now you can use Linux tools like `fio` to check the drive bandwidth and latency. You iteratively tune the drive parameters until they meet your requirement.
+
+Before executing the host program, we first need to prepare the input data (which is served as the raw real file, and the offloading version would create the virtual file based on that). Take "grep" for example, now you can use the data generator provided in `apps/host/grep/data_gen`.
 ```
 $ cd apps/host/grep/data_gen
 $ ./compile.sh
@@ -141,5 +188,8 @@ Now you can run the host program. You can run the offloading version and the pur
 
 ### C Simulation
 
+In order to increase the debugging efficiency and version iteration period, we also provide C Simulation (CSIM) and C-RTL Co-Simulation (COSIM) so that you can verify the correctness and functionality of your design without synthesizing and programming your FPGA. In this section, we first introduce CSIM.
+
 ### C-RTL Co-Simulation
 
+TBA
