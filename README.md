@@ -2,9 +2,30 @@
 ![Status](https://img.shields.io/badge/Version-Experimental-green.svg)
 ![License](https://img.shields.io/cran/l/devtools.svg)
 
-## Restriction
+## Table of Contents
 
-This is the AWS F1 version of Insider system. Since F1 does not open the partial reconfiguration interface to users, this version does not support dynamically reload the in-storage accelerators. Anytime when you wish to switch to a new accelerator, you need to reprogram the whole FPGA.
+- [SECRET](#secret)
+  * [Restrictions](#restrictions)
+  * [Preliminaries](#preliminaries)
+    + [AWS EC2](#aws-ec2)
+    + [AWS FPGA Toolchain](#aws-fpga-toolchain)
+    + [Linux Kernel](#linux-kernel)
+    + [Boost](#boost)
+    + [LLVM and Clang](#llvm-and-clang)
+  * [BUILD and Installation](#build-and-installation)
+  * [Usage](#usage)
+    + [Compiling Device Code](#compiling-device-code)
+    + [Compiling Host Code](#compiling-host-code)
+    + [Configuring Drive Parameters](#configuring-drive-parameters)
+    + [Executing](#executing)
+    + [C Simulation](#c-simulation)
+    + [C-RTL Co-Simulation](#c-rtl-co-simulation)
+
+## Restrictions
+
+1. This is the AWS F1 version of Insider system. Since F1 does not open the partial reconfiguration interface to users, this version does not support dynamically reload the in-storage accelerators. Anytime when you wish to switch to a new accelerator, you need to reprogram the whole FPGA.
+
+2. This version does not support simultaneous multiple applications. We will provide a separate github repository to support that.
 
 ## Preliminaries
 
@@ -63,7 +84,7 @@ Install the boost library.
 $ sudo yum install boost-devel
 ```
 
-### LLVM & Clang
+### LLVM and Clang
 
 Some functionality of Insider compiler is implemented based on LLVM and Clang, which should be built first.
 ```
@@ -75,7 +96,7 @@ $ cd PATH_TO_LLVM; mkdir build; cd build; cmake3 PATH_TO_LLVM/llvm
 $ make -j16 # Replace 16 with the number of cores of your instance
 ```
 
-## BUILD & Installation
+## BUILD and Installation
 
 The build and installation of Insider is easy. First, you need to set the environment variable `LLVM_SRC_PATH` to the path of the llvm source, and set `LLVM_BUILD_PATH` to the path of the llvm build folder. After that, execute the `install.sh` script.
 ```
@@ -167,4 +188,8 @@ Now you can run the host program. You can run the offloading version and the pur
 
 ### C Simulation
 
+In order to increase the debugging efficiency and version iteration period, we also provide C Simulation (CSIM) and C-RTL Co-Simulation (COSIM) so that you can verify the correctness and functionality of your design without synthesizing and programming your FPGA. In this section, we first introduce CSIM.
+
 ### C-RTL Co-Simulation
+
+TBA
