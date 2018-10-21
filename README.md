@@ -112,7 +112,7 @@ Finally, please logout and relogin.
 
 Caveat: you should perform all the compilation related stuff at the compilation instance to save your cost (since the FPGA instance is expensive!).
 
-We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at `apps/device`. Take "grep" for example, first execute insider device compiler to generate an STAccel project folder.
+We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at `apps/device`. Take `grep` for example, first execute insider device compiler to generate an STAccel project folder.
 ```
 $ cd apps/device/grep
 $ insider_device_compiler
@@ -137,7 +137,7 @@ $ aws ec2 describe-fpga-images --fpga-image-ids AFI_ID
 
 ### Compiling Host Code
 
-The host code is located at `apps/host`. For each application, we provide two version of host code: the offloading version and the pure-cpu version. Take "grep" for example, you will find `apps/host/grep/src/offload` and `apps/host/grep/src/pure_cpu`. The pure-cpu version can be directly compiled normally via `g++`. The offloading version should be compiler via `insider_host_g++` or `insider_host_gcc` depending whether it's written in C++ or C. For the "grep" case, you should invoke the following command:
+The host code is located at `apps/host`. For each application, we provide two version of host code: the offloading version and the pure-cpu version. Take `grep` for example, you will find `apps/host/grep/src/offload` and `apps/host/grep/src/pure_cpu`. The pure-cpu version can be directly compiled normally via `g++`. The offloading version should be compiler via `insider_host_g++` or `insider_host_gcc` depending whether it's written in C++ or C. For the `grep`  case, you should invoke the following command:
 
 ```
 $ cd apps/host/grep/src/offload
@@ -177,7 +177,7 @@ $ ./load_image.sh AGFI_ID
 If there's no error message (there will be some log which is fine), you will find a 64GiB-size Insider drive is mounted at `/mnt`. 
 Now you can use Linux tools like `fio` to check the drive bandwidth and latency. You iteratively tune the drive parameters until they meet your requirement.
 
-Before executing the host program, we first need to prepare the input data (which is served as the raw real file, and the offloading version would create the virtual file based on that). Take "grep" for example, now you can use the data generator provided in `apps/host/grep/data_gen`.
+Before executing the host program, we first need to prepare the input data (which is served as the raw real file, and the offloading version would create the virtual file based on that). Take `grep` for example, now you can use the data generator provided in `apps/host/grep/data_gen`.
 ```
 $ cd apps/host/grep/data_gen
 $ ./compile.sh
@@ -189,6 +189,25 @@ Now you can run the host program. You can run the offloading version and the pur
 ### C Simulation
 
 In order to increase the debugging efficiency and version iteration period, we also provide C Simulation (CSIM) and C-RTL Co-Simulation (COSIM) so that you can verify the correctness and functionality of your design without synthesizing and programming your FPGA. In this section, we first introduce CSIM.
+
+Take `grep` for example, first go to its folder of device code and invoke Insider device compiler.
+```
+$ cd apps/device/grep
+$ insider_device_compiler
+```
+Then, enter the generated `staccel` folder and invoke STAccel CSIM command.
+```
+$ cd staccel
+$ staccel_csim
+```
+It will generate a csim command. Now edit `csim/src/interconnects.cpp` to add your CSIM logics. Please invoke your logics at `user_simulation_function` which is at the end of the file. After that invoke `csim_compile.sh` to generate CSIM binary, and finally invoke it to start CSIM.
+```
+$ cd csim
+$ emacs src/interconnects.cpp # Replace emacs with your favorate editor.
+$ ./csim_compile.sh
+$ ./bin/csim
+```
+One example for `integration` is included at `device/integration/staccel_csim`. You can compile and run it to see its final effect.
 
 ### C-RTL Co-Simulation
 
