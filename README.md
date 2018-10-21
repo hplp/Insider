@@ -47,6 +47,7 @@ To reflect the performance in the latest system, we adapt the Insider drivers to
 [~]$ sudo rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
 [~]$ sudo yum --enablerepo=elrepo-kernel install kernel-ml
 [~]$ sudo yum --enablerepo=elrepo-kernel -y swap kernel-headers -- kernel-ml-headers
+[~]$ sudo yum install --skip-broken --enablerepo=elrepo-kernel kernel-ml-devel
 [~]$ sudo grub2-mkconfig -o /boot/grub/grub.conf
 [~]$ sudo grub2-set-default 0
 ```
