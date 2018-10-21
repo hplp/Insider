@@ -124,6 +124,28 @@ $ insider_host_g++ -O3 grep.cpp -o grep
 ```
 If you see error message like `relocation truncated to fit:`, please append the compilation flag `-mcmodel=medium`.
 
+### Configuring Drive Parameters
+
+All system parameters are listed at `/driver/nvme/const.h`.
+
+|Parameters|Formats|Comments|
+|-----------|---------|--------|
+|HOST_DELAY_CYCLE_CNT|(X)|Instructs X delaying cycles at the interconnection (note that <br/>setting X to zero does not mean the interconnection delay <br/>would be zero since it has the inherent hardware delay).|
+|HOST_READ_THROTTLE_PARAM|((X << 16) \| Y)|Throttles the interconnection read bandwidth into X / (X + Y) <br/>of the original unthrottled value.|
+|HOST_WRITE_THROTTLE_PARAM|((X << 16) \| Y)|Ditto, but throttles the write bandwidth.|
+|DEVICE_DELAY_CYCLE_CNT|(X)|Instructs X delaying cycles at the internal storage (note that <br/>setting X to zero does not mean the interconnection delay <br/>would be zero since it has the inherent hardware delay).|
+|DEVICE_READ_THROTTLE_PARAM|((X << 16) \| Y)|Throttles the internal storage read bandwidth into X / (X + Y)<br/> of the original unthrottled value.|
+|DEVICE_WRITE_THROTTLE_PARAM|((X << 16) \| Y)|Ditto, but throttles the write bandwidth.|
+
+For example, you can set the following values:
+```
+...
+#define HOST_READ_THROTTLE_PARAM ((9 << 16) | 13)
+...
+#define DEVICE_DELAY_CYCLE_CNT (2500)
+...
+```
+
 ### Executing
 
 All the commands in the section should be performed at the FPGA instance, i.e., AWS F1.
@@ -132,7 +154,9 @@ First, use `load_image.sh` in this repository to install your previously generat
 $ ./load_image.sh AGFI_ID
 ```
 If there's no error message (there will be some log which is fine), you will find a 64GiB-size Insider drive is mounted at `/mnt`. 
-Take "grep" for example, now you can use the data generator provided in `apps/host/grep/data_gen` to generate the input data (which is served as the raw real file).
+Now you can use Linux tools like `fio` to check the drive bandwidth and latency. You iteratively tune the drive parameters until they meet your requirement.
+
+Before executing the host program, we first need to prepare the input data (which is served as the raw real file, and the offloading version would create the virtual file based on that). Take "grep" for example, now you can use the data generator provided in `apps/host/grep/data_gen`.
 ```
 $ cd apps/host/grep/data_gen
 $ ./compile.sh
@@ -144,4 +168,3 @@ Now you can run the host program. You can run the offloading version and the pur
 ### C Simulation
 
 ### C-RTL Co-Simulation
-
