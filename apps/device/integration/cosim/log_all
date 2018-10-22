@@ -1,0 +1,201 @@
+kernel name: app_intg_matcher
+WARNING: [SYNCHK 200-23] app_intg_matcher.cpp:92: variable-indexed range selection may cause suboptimal QoR.
+INFO: [SYNCHK 200-10] 0 error(s), 1 warning(s).
+WARNING: [XFORM 203-561] 'Loop-1' (app_intg_matcher.cpp:42:5) in function 'app_intg_matcher' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 4.
+
+kernel name: app_intg_mat_rdc
+WARNING: [XFORM 203-561] 'Loop-1' (app_intg_mat_rdc.cpp:19:5) in function 'app_intg_mat_rdc' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+WARNING: [SCHED 204-21] Estimated clock period (16.3ns) exceeds the target (target clock period: 4ns, clock uncertainty: 0.7ns, effective delay budget: 3.3ns).
+WARNING: [SCHED 204-21] The critical path consists of the following:
+
+kernel name: app_intg_rdc_16to8
+WARNING: [XFORM 203-561] 'Loop-1' (app_intg_rdc_16to8.cpp:18:5) in function 'app_intg_rdc_16to8' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: app_intg_rdc_32to16
+WARNING: [XFORM 203-561] 'Loop-1' (app_intg_rdc_32to16.cpp:19:5) in function 'app_intg_rdc_32to16' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: app_intg_rdc_4to2
+WARNING: [XFORM 203-561] 'Loop-1' (app_intg_rdc_4to2.cpp:19:5) in function 'app_intg_rdc_4to2' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: app_intg_rdc_8to4
+WARNING: [XFORM 203-561] 'Loop-1' (app_intg_rdc_8to4.cpp:18:5) in function 'app_intg_rdc_8to4' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: app_intg_verifier
+WARNING: [XFORM 203-561] 'Loop-1' (app_intg_verifier.cpp:30:5) in function 'app_intg_verifier' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: app_intg_writer
+WARNING: [SYNCHK 200-23] app_intg_writer.cpp:57: variable-indexed range selection may cause suboptimal QoR.
+INFO: [SYNCHK 200-10] 0 error(s), 1 warning(s).
+WARNING: [XFORM 203-561] 'Loop-1' (app_intg_writer.cpp:25:5) in function 'app_intg_writer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: command_handler
+WARNING: [XFORM 203-561] 'Loop-1' (command_handler.cpp:28:9) in function 'command_handler' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: device_delayed_channel_forwarder
+WARNING: [XFORM 203-561] 'Loop-1' (device_delayed_channel_forwarder.cpp:19:2) in function 'device_delayed_channel_forwarder' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 1.
+
+kernel name: device_dram_delay_unit
+WARNING: [XFORM 203-561] 'Loop-1' (device_dram_delay_unit.cpp:27:5) in function 'device_dram_delay_unit' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: device_dram_req_time_marker
+WARNING: [XFORM 203-561] 'Loop-1' (device_dram_req_time_marker.cpp:20:2) in function 'device_dram_req_time_marker' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 1.
+
+kernel name: device_dram_throttle_unit
+WARNING: [XFORM 203-561] 'Loop-1' (device_dram_throttle_unit.cpp:40:5) in function 'device_dram_throttle_unit' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: device_pipe0_dram_dispatcher
+WARNING: [XFORM 203-561] 'Loop-1' (device_pipe0_dram_dispatcher.cpp:30:5) in function 'device_pipe0_dram_dispatcher' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: device_pipe1_dram_dispatcher
+WARNING: [XFORM 203-561] 'Loop-1' (device_pipe1_dram_dispatcher.cpp:43:5) in function 'device_pipe1_dram_dispatcher' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: dramA_read_req_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramA_read_req_multiplexer.cpp:15:9) in function 'dramA_read_req_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: dramA_read_resp_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramA_read_resp_multiplexer.cpp:19:2) in function 'dramA_read_resp_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 4.
+
+kernel name: dramA_write_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramA_write_multiplexer.cpp:21:2) in function 'dramA_write_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: dramB_read_req_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramB_read_req_multiplexer.cpp:15:9) in function 'dramB_read_req_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: dramB_read_resp_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramB_read_resp_multiplexer.cpp:19:2) in function 'dramB_read_resp_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 4.
+
+kernel name: dramB_write_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramB_write_multiplexer.cpp:21:2) in function 'dramB_write_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: dramC_read_req_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramC_read_req_multiplexer.cpp:15:9) in function 'dramC_read_req_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: dramC_read_resp_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramC_read_resp_multiplexer.cpp:19:2) in function 'dramC_read_resp_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 4.
+
+kernel name: dramC_write_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramC_write_multiplexer.cpp:21:2) in function 'dramC_write_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: dramD_read_req_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramD_read_req_multiplexer.cpp:15:9) in function 'dramD_read_req_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: dramD_read_resp_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramD_read_resp_multiplexer.cpp:19:2) in function 'dramD_read_resp_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 4.
+
+kernel name: dramD_write_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (dramD_write_multiplexer.cpp:21:2) in function 'dramD_write_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: dram_helper_app
+WARNING: [XFORM 203-561] 'Loop-1' (dram_helper_app.cpp:29:5) in function 'dram_helper_app' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: host_delayed_channel_forwarder
+WARNING: [XFORM 203-561] 'Loop-1' (host_delayed_channel_forwarder.cpp:19:2) in function 'host_delayed_channel_forwarder' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 1.
+
+kernel name: host_dram_delay_unit
+WARNING: [XFORM 203-561] 'Loop-1' (host_dram_delay_unit.cpp:27:5) in function 'host_dram_delay_unit' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: host_dram_req_time_marker
+WARNING: [XFORM 203-561] 'Loop-1' (host_dram_req_time_marker.cpp:20:2) in function 'host_dram_req_time_marker' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 1.
+
+kernel name: host_dram_throttle_unit
+WARNING: [XFORM 203-561] 'Loop-1' (host_dram_throttle_unit.cpp:40:5) in function 'host_dram_throttle_unit' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: host_pipe0_dram_dispatcher
+WARNING: [XFORM 203-561] 'Loop-1' (host_pipe0_dram_dispatcher.cpp:31:5) in function 'host_pipe0_dram_dispatcher' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: host_pipe1_dram_dispatcher
+WARNING: [XFORM 203-561] 'Loop-1' (host_pipe1_dram_dispatcher.cpp:43:5) in function 'host_pipe1_dram_dispatcher' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: interconnects
+WARNING: [XFORM 203-561] 'Loop-1' (interconnects.cpp:509:3) in function 'interconnects' is an infinite loop.
+
+kernel name: keeper_pcie_read_resp
+WARNING: [XFORM 203-561] 'Loop-1' (keeper_pcie_read_resp.cpp:13:9) in function 'keeper_pcie_read_resp' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: pcie_data_splitter_app
+WARNING: [XFORM 203-561] 'Loop-1' (pcie_data_splitter_app.cpp:22:5) in function 'pcie_data_splitter_app' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: pcie_helper_app
+WARNING: [SYNCHK 200-23] pcie_helper_app.cpp:143: variable-indexed range selection may cause suboptimal QoR.
+INFO: [SYNCHK 200-10] 0 error(s), 1 warning(s).
+WARNING: [XFORM 203-561] 'Loop-1' (pcie_helper_app.cpp:39:5) in function 'pcie_helper_app' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: pcie_read_context_forwarder
+WARNING: [XFORM 203-561] 'Loop-1' (pcie_read_context_forwarder.cpp:14:9) in function 'pcie_read_context_forwarder' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: pcie_read_req_mux
+WARNING: [XFORM 203-561] 'Loop-1' (pcie_read_req_mux.cpp:22:9) in function 'pcie_read_req_mux' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: pcie_read_resp_mux
+WARNING: [XFORM 203-561] 'Loop-1' (pcie_read_resp_mux.cpp:19:2) in function 'pcie_read_resp_mux' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: pcie_write_multiplexer
+WARNING: [XFORM 203-561] 'Loop-1' (pcie_write_multiplexer.cpp:37:5) in function 'pcie_write_multiplexer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: pipe0_data_handler
+WARNING: [XFORM 203-561] 'Loop-1' (pipe0_data_handler.cpp:24:2) in function 'pipe0_data_handler' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: pipe1_data_handler
+WARNING: [XFORM 203-561] 'Loop-1' (pipe1_data_handler.cpp:19:2) in function 'pipe1_data_handler' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: pipe2_data_handler
+WARNING: [SYNCHK 200-23] pipe2_data_handler.cpp:71: variable-indexed range selection may cause suboptimal QoR.
+INFO: [SYNCHK 200-10] 0 error(s), 1 warning(s).
+WARNING: [XFORM 203-561] 'Loop-1' (pipe2_data_handler.cpp:34:5) in function 'pipe2_data_handler' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 3.
+
+kernel name: pipeline_data_passer
+WARNING: [XFORM 203-561] 'Loop-1' (pipeline_data_passer.cpp:30:2) in function 'pipeline_data_passer' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 1.
+
+kernel name: reset_propaganda
+WARNING: [XFORM 203-561] 'Loop-1' (reset_propaganda.cpp:21:9) in function 'reset_propaganda' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+
+kernel name: unused_channel_preserver
+WARNING: [XFORM 203-561] 'Loop-1' (unused_channel_preserver.cpp:14:9) in function 'unused_channel_preserver' is an infinite loop.
+INFO: [SCHED 204-61] Pipelining result: Target II: 1, Final II: 1, Depth: 2.
+

@@ -9,6 +9,7 @@
 #define APP_FREE_BUF_TAG (12)
 #define APP_INPUT_PARAM_TAG (13)
 #define RESET_TAG (14)
+#define DEBUG_TAG (15)
 
 #define ALLOCATED_BUF_NUM (8)
 #define APP_BUF_SIZE_LOG2 (21)
