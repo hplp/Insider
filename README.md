@@ -102,7 +102,7 @@ The build and installation of Insider is easy. First, you need to set the enviro
 ```
 $ export LLVM_SRC_PATH=PATH TO THE LLVM SOURCE
 $ export LLVM_BUILD_PATH=PATH TO THE LLVM BUILD FOLDER
-$ chmod a+x install.sh; ./install.sh
+$ ./install.sh
 ```
 Finally, please logout and relogin. 
 
