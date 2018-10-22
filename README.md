@@ -190,7 +190,7 @@ Now you can run the host program. You can run the offloading version and the pur
 
 In order to increase the debugging efficiency and version iteration period, we also provide C Simulation (CSIM) and C-RTL Co-Simulation (COSIM) so that you can verify the correctness and functionality of your design without synthesizing and programming your FPGA. In this section, we first introduce CSIM.
 
-Take `grep` for example, first go to its folder of device code and invoke Insider device compiler.
+Take `grep` for example, first go to its folder of the device code and invoke Insider device compiler.
 ```
 $ cd apps/device/grep
 $ insider_device_compiler
@@ -211,4 +211,29 @@ One example for `integration` is included at `device/integration/staccel_csim`. 
 
 ### C-RTL Co-Simulation
 
-TBA
+In COSIM, we will transform the C/C++ based Insider code into the hardware RTL code to do simulation.　Since COSIM is based on cycle-accurate RTL simulator, which is slow, please refrain from simulating over a large dataset. Generally, the input size should be less than 100 KiB to make the process fast.
+
+Take `grep` for example, first go to its folder of the device code and invoke Insider COSIM toolchain.
+```
+$ cd apps/device/grep
+$ insider_cosim
+```
+It will generate `cosim` folder. You should edit the COSIM test file to instruct your test logics.
+```
+$ cd cosim
+$ emacs project/software/verif_rtl/src/test_main.c # Replace emacs with your favorate editor.
+```
+After that, invoke the makefile to start co-simulation.
+```
+$ cd project/verif/scripts
+$ make C_TEST=test_main
+```
+Wait until finishing executing, you will see the output of your program. If you wish to see the hardware wave to debug, copy `open_waves.tcl` into your simulation output and invoke it.
+```
+$ cp open_waves.tcl ../sim/test_main/
+$ cd !$
+$ vivado -source open_waves.tcl # This command should be executed at a GUI environment, e.g., GNOME3 through VNC viewer.
+```
+
+One example for `integration` is included at `apps/device/integration/cosim`. You can refer the code too see how to write the COSIM test file.
+
