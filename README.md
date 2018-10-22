@@ -125,7 +125,20 @@ The device code folder contains three main parts.
 
 1. `inc`. This folder is used for saving user-written header files. It could be empty if user does not need any extra header. 
 
-2. `kernels`. This folder is used for saving user-written sub-kernels. Insider supports modularity, and we encourage user to split their logic into small sub-kernels connecting with Insider queues. Each sub-kernel can only contain one function (whose name is same as its file name). Every sub-kernel file must include `<insider_kernel.h>`.
+2. `kernels`. This folder is used for saving user-written sub-kernels. Insider supports modularity, and we encourage user to split their logic into small sub-kernels connecting with Insider queues. Each sub-kernel can only contain one function (whose name is same as its file name), and it must include `<insider_kernel.h>`. Every sub-kernel should be a streaming kernel which observes the following format.
+```
+void kernel(
+  // Omit args here
+) {
+  // Define local variables that are alive across different while iterations.
+  // Other type of code is not allowed before the while loop.
+  while (1) {  // Must declare a while loop here.
+    // Put your kernel logic inside the while loop which would be repeatedly invoked.
+    // "break" and "continue" is not allowed inside the while loop.
+  }
+  // No code is allowed after the while loop.
+}
+```
 
 3. `interconnects.cpp`. This file is used for describing the connection between sub-kernels. User defines Insider queues at this file and passes them into sub-kernels. User must include `<insider_itc.h>` and every sub-kernel source file. Note that, there are three special queues: `app_input_data`. `app_output_data`, `app_input_params`. These three queues are defined by Insider framework.
 
