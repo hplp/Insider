@@ -1,4 +1,4 @@
-# SECRET
+# Insider
 ![Status](https://img.shields.io/badge/Version-Experimental-green.svg)
 ![License](https://img.shields.io/cran/l/devtools.svg)
 
