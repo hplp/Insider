@@ -111,7 +111,7 @@ Finally, please logout and relogin.
 
 ### The Syntax of Device Code
 
-You should strictly observe the syntax in Insider when writing device code. We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at `apps/device`. You can refer to their code to learn the syntax. 
+The device code in Insider is compatible with Xilinx Vivado HLS (since our backend is built on Xilinx tools). However, you should strictly observe the syntax in Insider when writing device code. We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at `apps/device`. You can refer to their code to learn the syntax. 
 
 The hierarchy of device code (for example, the `grep` application) should be structured like this:
 ```
@@ -125,7 +125,7 @@ The device code folder contains three main parts.
 
 1. `inc`. This folder is used for saving user-written header files. It could be empty if user does not need any extra header. 
 
-2. `kernels`. This folder is used for saving user-written sub-kernels. Insider supports modularity, and we encourage user to split their logic into small sub-kernels connecting with Insider queues. Each sub-kernel can only contain one function (whose name is same as its file name), and it must include `<insider_kernel.h>`. Every sub-kernel should be a streaming kernel which observes the following format.
+2. `kernels`. This folder is used for saving user-written sub-kernels. Insider supports modularity, and we encourage user to split their logic into small sub-kernels connecting with Insider queues. Each sub-kernel can only contain one function (whose name is same as its file name), and it must include `<insider_kernel.h>`. Every sub-kernel should be a streaming kernel which observes the following format. 
 ```
 void kernel(
   // Omit args here
