@@ -4,7 +4,7 @@
 
 ## Table of Contents
 
-- [SECRET](#secret)
+- [Insider](#insider)
   * [Restrictions](#restrictions)
   * [Preliminaries](#preliminaries)
     + [AWS EC2](#aws-ec2)
