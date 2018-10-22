@@ -89,10 +89,10 @@ $ sudo yum install boost-devel
 Some functionality of Insider compiler is implemented based on LLVM and Clang, which should be built first.
 ```
 $ sudo yum install cmake3 svn
-$ cd PATH_TO_LLVM
+$ cd $PATH_TO_LLVM
 $ svn co http://llvm.org/svn/llvm-project/llvm/trunk llvm
 $ cd llvm/tools; svn co http://llvm.org/svn/llvm-project/cfe/trunk clang
-$ cd PATH_TO_LLVM; mkdir build; cd build; cmake3 PATH_TO_LLVM/llvm
+$ cd $PATH_TO_LLVM; mkdir build; cd build; cmake3 $PATH_TO_LLVM/llvm
 $ make -j16 # Replace 16 with the number of cores of your instance
 ```
 
