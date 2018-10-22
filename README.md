@@ -14,6 +14,7 @@
     + [LLVM and Clang](#llvm-and-clang)
   * [BUILD and Installation](#build-and-installation)
   * [Usage](#usage)
+    + [The Syntax of Device Code](#the-syntax-of-device-code)
     + [Compiling Device Code](#compiling-device-code)
     + [Compiling Host Code](#compiling-host-code)
     + [Configuring Drive Parameters](#configuring-drive-parameters)
@@ -108,11 +109,37 @@ Finally, please logout and relogin.
 
 ## Usage
 
+### The Syntax of Device Code
+
+You should strictly observe the syntax in Insider when writing device code. We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at `apps/device`. You can refer to their code to learn the syntax. 
+
+The hierarchy of device code (for example, the `grep` application) should be structured like this:
+```
+grep
+ |------- inc
+ |------- kernels
+ |------- interconnects.cpp
+```
+   
+The device code folder contains three main parts.
+
+1. `inc`. This folder is used for saving user-written header files. It could be empty if user does not need any extra header. 
+
+2. `kernels`. This folder is used for saving user-written sub-kernels. Insider supports modularity, and we encourage user to split their logic into small sub-kernels connecting with Insider queues. Each sub-kernel can only contain one function (whose name is same as its file name). Every sub-kernel file must include `<insider_kernel.h>`.
+
+3. `interconnects.cpp`. This file is used for describing the connection between sub-kernels. User defines Insider queues at this file and passes them into sub-kernels. User must include `<insider_itc.h>` and every sub-kernel source file. Note that, there are three special queues: `app_input_data`. `app_output_data`, `app_input_params`. These three queues are defined by Insider framework.
+
+    1. `app_input_data` stores the data read from the drive which is used for the accelerator processing.
+ 
+    2. `app_output_data` stores the output data of the accelerator, which will be sent back to host as the return value of `iread`.
+ 
+    3. `app_input_params` stores the host-sent input parameters. 
+ 
 ### Compiling Device Code
 
 Caveat: you should perform all the compilation related stuff at the compilation instance to save your cost (since the FPGA instance is expensive!).
 
-We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at `apps/device`. Take `grep` for example, first execute insider device compiler to generate an STAccel project folder.
+Take `grep` for example, first execute insider device compiler to generate an STAccel project folder.
 ```
 $ cd apps/device/grep
 $ insider_device_compiler
