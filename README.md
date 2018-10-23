@@ -140,7 +140,7 @@ void kernel(
 }
 ```
 
-3. `interconnects.cpp`. This file is used for describing the connection between sub-kernels. User defines Insider queues at this file and passes them into sub-kernels. User must include `<insider_itc.h>` and every sub-kernel source file. Note that, there are three special queues: `app_input_data`. `app_output_data`, `app_input_params`. These three queues are defined by Insider framework.
+3. `interconnects.cpp`. This file is used for describing the connection between sub-kernels. User defines Insider queues (and indicates the queue depths) at this file and passes them into sub-kernels. User must include `<insider_itc.h>` and every sub-kernel source file. Note that, there are three special queues: `app_input_data`. `app_output_data`, `app_input_params`. These three queues are defined by Insider framework.
 
     1. `app_input_data` stores the data read from the drive which is used for the accelerator processing.
  
