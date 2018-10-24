@@ -1,10 +1,10 @@
-# SECRET
+# Insider
 ![Status](https://img.shields.io/badge/Version-Experimental-green.svg)
 ![License](https://img.shields.io/cran/l/devtools.svg)
 
 ## Table of Contents
 
-- [SECRET](#secret)
+- [Insider](#insider)
   * [Restrictions](#restrictions)
   * [Preliminaries](#preliminaries)
     + [AWS EC2](#aws-ec2)
@@ -14,6 +14,7 @@
     + [LLVM and Clang](#llvm-and-clang)
   * [BUILD and Installation](#build-and-installation)
   * [Usage](#usage)
+    + [The Syntax of Device Code](#the-syntax-of-device-code)
     + [Compiling Device Code](#compiling-device-code)
     + [Compiling Host Code](#compiling-host-code)
     + [Configuring Drive Parameters](#configuring-drive-parameters)
@@ -89,30 +90,69 @@ $ sudo yum install boost-devel
 Some functionality of Insider compiler is implemented based on LLVM and Clang, which should be built first.
 ```
 $ sudo yum install cmake3 svn
-$ cd PATH_TO_LLVM
+$ cd $PATH_TO_LLVM
 $ svn co http://llvm.org/svn/llvm-project/llvm/trunk llvm
 $ cd llvm/tools; svn co http://llvm.org/svn/llvm-project/cfe/trunk clang
-$ cd PATH_TO_LLVM; mkdir build; cd build; cmake3 PATH_TO_LLVM/llvm
+$ cd $PATH_TO_LLVM; mkdir build; cd build; cmake3 $PATH_TO_LLVM/llvm
 $ make -j16 # Replace 16 with the number of cores of your instance
 ```
 
 ## BUILD and Installation
 
-The build and installation of Insider is easy. First, you need to set the environment variable `LLVM_SRC_PATH` to the path of the llvm source, and set `LLVM_BUILD_PATH` to the path of the llvm build folder. After that, execute the `install.sh` script.
+The build and installation of Insider is easy. First, you need to set the environment variable `LLVM_SRC_PATH` to the path of the llvm source, and set `LLVM_BUILD_PATH` to the path of the llvm build folder. After that, clone this repository and execute the `install.sh` script.
 ```
 $ export LLVM_SRC_PATH=PATH TO THE LLVM SOURCE
 $ export LLVM_BUILD_PATH=PATH TO THE LLVM BUILD FOLDER
-$ chmod a+x install.sh; ./install.sh
+$ ./install.sh
 ```
 Finally, please logout and relogin. 
 
 ## Usage
 
+### The Syntax of Device Code
+
+The device code in Insider is compatible with Xilinx Vivado HLS (since our backend is built on Xilinx tools). However, you should strictly observe the syntax in Insider when writing device code. We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at `apps/device`. You can refer to their code to learn the syntax. 
+
+The hierarchy of device code (for example, the `grep` application) should be structured like this:
+```
+grep
+ |------- inc
+ |------- kernels
+ |------- interconnects.cpp
+```
+   
+The device code folder contains three main parts.
+
+1. `inc`. This folder is used for saving user-written header files. It could be empty if user does not need any extra header. 
+
+2. `kernels`. This folder is used for saving user-written sub-kernels. Insider supports modularity, and we encourage user to split their logic into small sub-kernels connecting with Insider queues. Each sub-kernel can only contain one function (whose name is same as its file name), and it must include `<insider_kernel.h>`. Every sub-kernel should be a streaming kernel which observes the following format. 
+```
+void kernel(
+  // Omit args here
+) {
+  // Define local variables that are alive across different while iterations.
+  // Other type of code is not allowed before the while loop.
+  while (1) {  // Must declare a while loop here.
+    // Put your kernel logic inside the while loop which would be repeatedly invoked.
+    // "break" and "continue" is not allowed inside the while loop.
+  }
+  // No code is allowed after the while loop.
+}
+```
+
+3. `interconnects.cpp`. This file is used for describing the connection between sub-kernels. User defines Insider queues (and indicates the queue depths) at this file and passes them into sub-kernels. User must include `<insider_itc.h>` and every sub-kernel source file. Note that, there are three special queues: `app_input_data`. `app_output_data`, `app_input_params`. These three queues are defined by Insider framework.
+
+    1. `app_input_data` stores the data read from the drive which is used for the accelerator processing.
+ 
+    2. `app_output_data` stores the output data of the accelerator, which will be sent back to host as the return value of `iread`.
+ 
+    3. `app_input_params` stores the host-sent input parameters. 
+ 
 ### Compiling Device Code
 
 Caveat: you should perform all the compilation related stuff at the compilation instance to save your cost (since the FPGA instance is expensive!).
 
-We provide six applications in the respository, whose source code are located at apps folder. Their device code are located at `apps/device`. Take `grep` for example, first execute insider device compiler to generate an STAccel project folder.
+Take `grep` for example, first execute insider device compiler to generate an STAccel project folder.
 ```
 $ cd apps/device/grep
 $ insider_device_compiler
