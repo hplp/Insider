@@ -191,7 +191,6 @@ All system parameters are listed at `/driver/nvme/const.h`.
 
 |Parameters|Formats|Comments|
 |-----------|---------|--------|
-|HOST_DELAY_CYCLE_CNT|(X)|Instructs X delaying cycles at the interconnection (note that <br/>setting X to zero does not mean the interconnection delay <br/>would be zero since it has the inherent hardware delay).|
 |HOST_READ_THROTTLE_PARAM|((X << 16) \| Y)|Throttles the interconnection read bandwidth into X / (X + Y) <br/>of the original unthrottled value.|
 |HOST_WRITE_THROTTLE_PARAM|((X << 16) \| Y)|Ditto, but throttles the write bandwidth.|
 |DEVICE_DELAY_CYCLE_CNT|(X)|Instructs X delaying cycles at the internal storage (note that <br/>setting X to zero does not mean the interconnection delay <br/>would be zero since it has the inherent hardware delay).|
