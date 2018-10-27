@@ -120,7 +120,6 @@ int gen_data() {
   }
 }
 void user_simulation_function() {
-  cl_poke(7 << 2, 2500);
   // PUT YOUR CODE HERE
   gen_data();
   int i;
