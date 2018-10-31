@@ -103,6 +103,7 @@ The build and installation of Insider is easy. First, you need to set the enviro
 ```
 $ export LLVM_SRC_PATH=PATH TO THE LLVM SOURCE
 $ export LLVM_BUILD_PATH=PATH TO THE LLVM BUILD FOLDER
+$ export AWS_FPGA_PATH=PATH TO THE CLONED AWS FPGA GITHUB REPOSITORY
 $ ./install.sh
 ```
 Finally, please logout and relogin. 
