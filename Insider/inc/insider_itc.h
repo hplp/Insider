@@ -140,7 +140,7 @@ ssize_t iread(int fd, void *buf, size_t count) {
     if (count >= buf_len - buf_idx) {
       read_size = buf_len - buf_idx;
       if (is_eop) {
-       	kernel_user_memcpy(buf, kbuf_addr + buf_idx, read_size);
+	kernel_user_memcpy(buf, kbuf_addr + buf_idx, read_size);
 	file_finish_reading = 1;
 	reset();
       }
