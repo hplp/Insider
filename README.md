@@ -126,7 +126,7 @@ The device code folder contains three main parts.
 
 1. `inc`. This folder is used for saving user-written header files. It could be empty if user does not need any extra header. 
 
-2. `kernels`. This folder is used for saving user-written sub-kernels. Insider supports modularity, and we encourage user to split their logic into small sub-kernels connecting with Insider queues. Each sub-kernel can only contain one function (whose name is same as its file name), and it must include `<insider_kernel.h>`. Every sub-kernel should be a streaming kernel which observes the following format. 
+2. `kernels`. This folder is used for saving user-written sub-kernels. Insider supports modularity, and we encourage user to split their logic into small sub-kernels connecting with Insider queues. (Insider queue can be read or written; due to the potential bug in Xilinx Vivado HLS, please insists using non-blocking read `read_nb` and blocking write `write` to operate Insider queues). Each sub-kernel can only contain one function (whose name is same as its file name), and it must include `<insider_kernel.h>`. Every sub-kernel should be a streaming kernel which observes the following format. 
 ```
 void kernel(
   // Omit args here
