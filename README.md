@@ -26,7 +26,7 @@
 
 1. This is the AWS F1 version of Insider system. Since F1 does not open the partial reconfiguration interface to users, this version does not support dynamically reload the in-storage accelerators. Anytime when you wish to switch to a new accelerator, you need to reprogram the whole FPGA.
 
-2. This version does not support simultaneous multiple applications. We will provide a separate github repository to support that.
+2. This version does not support simultaneous multiple applications. We provide [a separate github repository](https://github.com/zainryan/Insider-multiapp) to support that.
 
 ## Preliminaries
 
