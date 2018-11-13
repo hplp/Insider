@@ -40,7 +40,7 @@ You typically needs two EC2 instances:
 
 For both instances, you should use the FPGA developer AMI, which can be found at the AWS Marketplace when you launching a new instance. There are two caveats.
 
-  1. Make sure you choose the AMI version as 1.4.0. It could be found at the panel of "FPGA Developer AMI" via `Previous versions -> Continue to Configuration`. The reason behinds this is that the newer version of AMI adopts more recent Vivado HLS tool, which has significant lower performance in synthesizing some of our kernels.
+  1. Make sure you choose the AMI version as 1.4.0. It could be found at the panel of "FPGA Developer AMI" via `Previous versions -> Continue to Configuration`. The reason behinds this is that the newer version of AMI adopts more recent Vivado HLS tool, which has a significant lower performance on synthesizing some of our kernels.
   
   2. Make sure that you configure the compilation instance to have more than 150 GB storage.
   
