@@ -10,23 +10,12 @@
 #define DRIVE_DELAY_CYCLE_TAG (7)
 #define DRIVE_THROTTLE_PARAM_TAG (8)
 #define PRESERVER_CHEAT_TAG (9)
+#define APP_FILE_INFO_TAG (10)
+#define APP_BUF_ADDRS_TAG (11)
+#define APP_FREE_BUF_TAG (12)
+#define APP_INPUT_PARAM_TAG (13)
+#define RESET_TAG (14)
 #define DEBUG_TAG (15)
-#define APP_NUM (3)
-#define APP_FILE_INFO_0_TAG (16)
-#define APP_FILE_INFO_1_TAG (17)
-#define APP_FILE_INFO_2_TAG (18)
-#define APP_BUF_ADDRS_0_TAG (19)
-#define APP_BUF_ADDRS_1_TAG (20)
-#define APP_BUF_ADDRS_2_TAG (21)
-#define APP_FREE_BUF_0_TAG (22)
-#define APP_FREE_BUF_1_TAG (23)
-#define APP_FREE_BUF_2_TAG (24)
-#define APP_INPUT_PARAM_0_TAG (25)
-#define APP_INPUT_PARAM_1_TAG (26)
-#define APP_INPUT_PARAM_2_TAG (27)
-#define APP_RESET_0_TAG (28)
-#define APP_RESET_1_TAG (29)
-#define APP_RESET_2_TAG (30)
 #define READ_CMD_TAG_OFFSET (64)
 #define WRITE_CMD_TAG_OFFSET (128)
 
@@ -39,8 +28,6 @@
 #define DRAM_ADDR_BUS_WIDTH (36) // 64 GB
 #define APP_BUF_SIZE (2 * 1024 * 1024)
 #define APP_BUF_SIZE_LOG2 (21)
-#define APP_DRAM_RESP_BUFFER_SIZE (512)
-#define APP_DRAM_RESP_BUFFER_SIZE_LOG2 (9)
 #define MAX_THROTTLE_CONTIGUOUS_LOG2 (24)
 #define DEVICE_REQ_QUEUE_DEPTH (64)
 #define DATA_BUS_WIDTH (0x40)
@@ -83,11 +70,6 @@ struct Dram_Dispatcher_Read_Req {
   unsigned char bank_id;
   unsigned char end_bank_id;
   unsigned int cmd_num;
-};
-
-struct Device_Dram_Context {
-  unsigned char id;
-  unsigned char num;
 };
 
 struct APP_Data {
