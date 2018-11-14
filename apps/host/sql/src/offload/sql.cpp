@@ -1,18 +1,18 @@
-#include <map>
-#include <unistd.h>
-#include <fcntl.h> 
+#include "../../inc/const.h"
 #include <cassert>
+#include <chrono>
 #include <cstdio>
+#include <fcntl.h>
+#include <iostream>
+#include <map>
 #include <omp.h>
 #include <queue>
-#include <iostream>
-#include <chrono>
+#include <unistd.h>
 #include <unordered_map>
-#include "../../inc/const.h"
 
+#include <insider_runtime.hpp>
 #include <stdio.h>
 #include <time.h>
-#include <insider_runtime.hpp>
 
 #define c2i(c) (c - '0')
 #define max(a, b) ((a) > (b) ? (a) : (b))
@@ -31,21 +31,18 @@ struct SumNumPair {
 
 class Timer {
 public:
-  Timer() :
-    m_beg(clock_::now()) {
-  }
-  void reset() {
-    m_beg = clock_::now();
-  }
+  Timer() : m_beg(clock_::now()) {}
+  void reset() { m_beg = clock_::now(); }
 
   double elapsed() const {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(
-								 clock_::now() - m_beg).count();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(clock_::now() -
+                                                                 m_beg)
+        .count();
   }
 
 private:
   typedef std::chrono::high_resolution_clock clock_;
-  typedef std::chrono::duration<double, std::ratio<1> > second_;
+  typedef std::chrono::duration<double, std::ratio<1>> second_;
   std::chrono::time_point<clock_> m_beg;
 };
 
@@ -59,7 +56,7 @@ struct Record {
   unsigned char dummy[4];
 };
 
-Record record_arr[ROW_NUM] __attribute__ ((aligned (32)));
+Record record_arr[ROW_NUM] __attribute__((aligned(32)));
 
 int get_round_name_mapping_id(string str) {
   static int id = 0;
@@ -90,44 +87,39 @@ void read_data() {
     while (read_bytes != READ_BUF_SIZE) {
       int tmp = iread(fd, read_buf, READ_BUF_SIZE - read_bytes);
       if (!tmp) {
-	fin_file = true;
-	break;
-      }
-      else {
-	read_bytes += tmp;
+        fin_file = true;
+        break;
+      } else {
+        read_bytes += tmp;
       }
     }
     totalReadBytes += read_bytes;
 #pragma omp parallel for schedule(static, 2) num_threads(8)
-    for (int i = 0; i < read_bytes / ROW_LEN; i ++) {
+    for (int i = 0; i < read_bytes / ROW_LEN; i++) {
       int idx = i * ROW_LEN;
-      record_arr[i + offset].year = 
-	c2i(read_buf[idx + 30]) * 10 + 
-	c2i(read_buf[idx + 31]) * 1;
+      record_arr[i + offset].year =
+          c2i(read_buf[idx + 30]) * 10 + c2i(read_buf[idx + 31]) * 1;
 
-      for (int j = 0; j < ROUND_NAME_LEN; j ++) {
-	record_arr[i + offset].round_name[j] = read_buf[idx + j];
+      for (int j = 0; j < ROUND_NAME_LEN; j++) {
+        record_arr[i + offset].round_name[j] = read_buf[idx + j];
       }
       idx += ROUND_NAME_LEN;
 
-      for (int j = 0; j < PLAYER_NAME_LEN; j ++) {
-	record_arr[i + offset].player_name[j] = read_buf[idx + j];
+      for (int j = 0; j < PLAYER_NAME_LEN; j++) {
+        record_arr[i + offset].player_name[j] = read_buf[idx + j];
       }
       idx += PLAYER_NAME_LEN;
 
-      record_arr[i + offset].score = 
-	c2i(read_buf[idx + 0]) * 10 + 
-	c2i(read_buf[idx + 1]) * 1;
+      record_arr[i + offset].score =
+          c2i(read_buf[idx + 0]) * 10 + c2i(read_buf[idx + 1]) * 1;
       idx += 2;
 
-      record_arr[i + offset].month = 
-	c2i(read_buf[idx + 0]) * 10 + 
-	c2i(read_buf[idx + 1]) * 1;
+      record_arr[i + offset].month =
+          c2i(read_buf[idx + 0]) * 10 + c2i(read_buf[idx + 1]) * 1;
       idx += 2;
 
-      record_arr[i + offset].day = 
-	c2i(read_buf[idx + 0]) * 10 + 
-	c2i(read_buf[idx + 1]) * 1;
+      record_arr[i + offset].day =
+          c2i(read_buf[idx + 0]) * 10 + c2i(read_buf[idx + 1]) * 1;
     }
     offset += read_bytes / ROW_LEN;
   }

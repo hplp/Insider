@@ -13,9 +13,9 @@
 // implied. See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <unistd.h>
 
 // Vivado does not support svGetScopeFromName
@@ -25,8 +25,8 @@
 #endif
 //#endif
 
-#include "sh_dpi_tasks.h"
 #include "insider_cosim.h"
+#include "sh_dpi_tasks.h"
 
 void test_main(uint32_t *exit_code) {
 
@@ -35,7 +35,7 @@ void test_main(uint32_t *exit_code) {
 #ifndef VIVADO_SIM
   svScope scope;
 #endif
-//#endif
+  //#endif
 
   uint32_t rdata;
 
@@ -53,5 +53,4 @@ void test_main(uint32_t *exit_code) {
 
 void user_simulation_function() {
   // PUT YOUR CODE HERE
-  
 }

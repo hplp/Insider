@@ -1,15 +1,13 @@
-#include <vector>
+#include "../inc/const.h"
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <omp.h>
-#include <cstdlib>
-#include "../inc/const.h"
+#include <vector>
 
 using namespace std;
 
-int random(int upper, unsigned int *tid) {
-  return rand_r(tid) % upper;
-}
+int random(int upper, unsigned int *tid) { return rand_r(tid) % upper; }
 
 string supply_leadings(string orig, int len) {
   assert(orig.size() <= len);
@@ -37,18 +35,18 @@ int main() {
 #pragma omp parallel
   {
     unsigned int tid = omp_get_thread_num();
-    for (int i = 0; i < NUM_TRAIN_CASES / DATA_GEN_NUM_THREADS; i ++) {
+    for (int i = 0; i < NUM_TRAIN_CASES / DATA_GEN_NUM_THREADS; i++) {
       string result = random_result(&tid);
       vector<string> feature_vec;
-      for (int j = 0; j < FEATURE_DIM; j ++) {
-	feature_vec.push_back(random_weight(&tid));
+      for (int j = 0; j < FEATURE_DIM; j++) {
+        feature_vec.push_back(random_weight(&tid));
       }
 #pragma omp critical
       {
-	cout << result;
-	for (auto &str:feature_vec) {
-	  cout << str;
-	}
+        cout << result;
+        for (auto &str : feature_vec) {
+          cout << str;
+        }
       }
     }
   }

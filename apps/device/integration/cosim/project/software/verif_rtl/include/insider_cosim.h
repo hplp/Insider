@@ -35,7 +35,9 @@ static void dram_write(unsigned long long addr, unsigned char data);
 static void init();
 int iopen(const char *pathname, int flags);
 static void update_metadata();
-static void kernel_user_memcpy(void *user_buf, unsigned long long kernel_buf_addr, size_t count);
+static void kernel_user_memcpy(void *user_buf,
+                               unsigned long long kernel_buf_addr,
+                               size_t count);
 static void reset();
 ssize_t iread(int fd, void *buf, size_t count);
 int iclose(int fd);
@@ -50,25 +52,22 @@ static void dram_write(unsigned long long addr, unsigned char data) {
 
   if (dram_id == 0) {
     host_memory_putc(dram_idx + COSIM_DRAMA_ADDR_OFFSET, data);
-  }
-  else if (dram_id == 1) {
+  } else if (dram_id == 1) {
     host_memory_putc(dram_idx + COSIM_DRAMB_ADDR_OFFSET, data);
-  }
-  else if (dram_id == 2) {
+  } else if (dram_id == 2) {
     host_memory_putc(dram_idx + COSIM_DRAMC_ADDR_OFFSET, data);
-  }
-  else if (dram_id == 3) {
+  } else if (dram_id == 3) {
     host_memory_putc(dram_idx + COSIM_DRAMD_ADDR_OFFSET, data);
   }
 }
 
 static void init() {
-  for (i = 0; i < ALLOCATED_BUF_NUM; i ++) {
+  for (i = 0; i < ALLOCATED_BUF_NUM; i++) {
     if (i == 0) {
       app_buf_phy_addrs[i] = 0;
-    }
-    else {
-      app_buf_phy_addrs[i] = app_buf_phy_addrs[i - 1] + (1 << (APP_BUF_SIZE_LOG2 + 1));
+    } else {
+      app_buf_phy_addrs[i] =
+          app_buf_phy_addrs[i - 1] + (1 << (APP_BUF_SIZE_LOG2 + 1));
     }
     cl_poke(TAG(APP_BUF_ADDRS_TAG), app_buf_phy_addrs[i] >> 32);
     cl_poke(TAG(APP_BUF_ADDRS_TAG), app_buf_phy_addrs[i] & 0xFFFFFFFF);
@@ -93,19 +92,17 @@ static void update_metadata() {
   volatile unsigned char *metadata_ptr;
   do {
     metadata_addr = app_buf_phy_addrs[app_bufs_ptr] + BUF_METADATA_IDX;
-    flag_addr = app_buf_phy_addrs[app_bufs_ptr] + BUF_METADATA_IDX + sizeof(unsigned int);
-    flag =
-      (host_memory_getc(flag_addr + 3) << 24) |
-      (host_memory_getc(flag_addr + 2) << 16) |
-      (host_memory_getc(flag_addr + 1) << 8)  |
-      (host_memory_getc(flag_addr + 0) << 0);
-    metadata =
-      (host_memory_getc(metadata_addr + 3) << 24) |
-      (host_memory_getc(metadata_addr + 2) << 16) |
-      (host_memory_getc(metadata_addr + 1) << 8)  |
-      (host_memory_getc(metadata_addr + 0) << 0);
-  }
-  while (!(flag));
+    flag_addr = app_buf_phy_addrs[app_bufs_ptr] + BUF_METADATA_IDX +
+                sizeof(unsigned int);
+    flag = (host_memory_getc(flag_addr + 3) << 24) |
+           (host_memory_getc(flag_addr + 2) << 16) |
+           (host_memory_getc(flag_addr + 1) << 8) |
+           (host_memory_getc(flag_addr + 0) << 0);
+    metadata = (host_memory_getc(metadata_addr + 3) << 24) |
+               (host_memory_getc(metadata_addr + 2) << 16) |
+               (host_memory_getc(metadata_addr + 1) << 8) |
+               (host_memory_getc(metadata_addr + 0) << 0);
+  } while (!(flag));
   host_memory_putc(flag_addr + 0, 0);
   host_memory_putc(flag_addr + 1, 0);
   host_memory_putc(flag_addr + 2, 0);
@@ -114,8 +111,10 @@ static void update_metadata() {
   is_eop = metadata & 0x1;
 }
 
-static void kernel_user_memcpy(void *user_buf, unsigned long long kernel_buf_addr, size_t count) {
-  for (size_t i = 0; i < count; i ++) {
+static void kernel_user_memcpy(void *user_buf,
+                               unsigned long long kernel_buf_addr,
+                               size_t count) {
+  for (size_t i = 0; i < count; i++) {
     ((unsigned char *)user_buf)[i] = host_memory_getc(kernel_buf_addr + i);
   }
 }
@@ -129,8 +128,7 @@ ssize_t iread(int fd, void *buf, size_t count) {
   if (fd == VIRT_FILE_FD) {
     if (file_finish_reading) {
       return 0;
-    }
-    else if (first) {
+    } else if (first) {
       update_metadata();
       first = 0;
     }
@@ -142,23 +140,20 @@ ssize_t iread(int fd, void *buf, size_t count) {
         file_finish_reading = 1;
         reset();
         kernel_user_memcpy(buf, kbuf_addr + buf_idx, read_size);
-      }
-      else {
+      } else {
         kernel_user_memcpy(buf, kbuf_addr + buf_idx, read_size);
         cl_poke(TAG(APP_FREE_BUF_TAG), 0);
         app_bufs_ptr = (app_bufs_ptr + 1) & (ALLOCATED_BUF_NUM - 1);
         buf_idx = 0;
         update_metadata();
       }
-    }
-    else {
+    } else {
       read_size = count;
       buf_idx += read_size;
       kernel_user_memcpy(buf, kbuf_addr + buf_idx, read_size);
     }
     return read_size;
-  }
-  else {
+  } else {
     return -1;
   }
 }
@@ -167,14 +162,13 @@ int iclose(int fd) {
   if (fd == VIRT_FILE_FD) {
     cl_poke(TAG(RESET_TAG), 0);
     return 0;
-  }
-  else {
+  } else {
     return -1;
   }
 }
 
 void set_physical_file(unsigned char *buf, size_t count) {
-  for (i = 0; i < count; i ++) {
+  for (i = 0; i < count; i++) {
     dram_write(i, buf[i]);
   }
   cl_poke(TAG(APP_FILE_INFO_TAG), 0);

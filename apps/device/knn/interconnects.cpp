@@ -7,5 +7,5 @@
 
 // describe the interconnection
 void interconnects() {
-  app_knn (app_input_data, app_output_data, app_input_params);
+  app_knn(app_input_data, app_output_data, app_input_params);
 }

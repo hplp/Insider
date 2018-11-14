@@ -1,7 +1,7 @@
+#include <map>
+#include <set>
 #include <sstream>
 #include <string>
-#include <set>
-#include <map>
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -18,49 +18,46 @@ using namespace clang;
 using namespace clang::driver;
 using namespace clang::tooling;
 
-static llvm::cl::OptionCategory STAccelCategory("Insider s2s transformer for apps");
+static llvm::cl::OptionCategory
+    STAccelCategory("Insider s2s transformer for apps");
 std::string topFuncName;
 bool catchTopFunc = false;
 std::map<std::string, bool> ResetFifoMap;
 
 class RewritingVisitor : public RecursiveASTVisitor<RewritingVisitor> {
 public:
-  RewritingVisitor(Rewriter &R, 
-		   std::string &_beforeWhileText, 
-		   std::string &_resetText, 
-		   std::string &_whileBodyText
-		   ) :
-    TheRewriter(R), 
-    beforeWhileText(_beforeWhileText), 
-    resetText(_resetText), 
-    whileBodyText(_whileBodyText) {}
+  RewritingVisitor(Rewriter &R, std::string &_beforeWhileText,
+                   std::string &_resetText, std::string &_whileBodyText)
+      : TheRewriter(R), beforeWhileText(_beforeWhileText),
+        resetText(_resetText), whileBodyText(_whileBodyText) {}
 
   bool VisitFunctionDecl(FunctionDecl *f) {
-    if (f -> hasBody()) {
-      if (f -> getNameInfo().getAsString() == topFuncName) {
-	Stmt *funcBody = f -> getBody();
-	SourceLocation locStart = funcBody -> getBeginLoc();
-	SourceLocation locEnd = funcBody -> getEndLoc();	
-	TheRewriter.RemoveText(SourceRange(locStart, locEnd));
-	std::string text;
-	text += "{\n" + beforeWhileText;
-	text += "\nbool reset = false;\n unsigned reset_cnt = 0;\n";
-	text += "while (1) {\n #pragma HLS pipeline\n";
-	text += "bool dummy;\n";
-	text += "if (reset || (reset = reset_" + topFuncName + ".read_nb(dummy))) {\n";
-	text += resetText;
-	text += "reset_cnt ++;\n";
-	text += "if (reset_cnt == RESET_CNT) {\n";
-	text += "reset_cnt = 0;\n";
-	text += "reset = false;\n";
-	text += "}\n}\n";
-	text += "else ";
-	text += whileBodyText;
-	text += "}\n}\n}";
-	TheRewriter.InsertText(locStart, text);
+    if (f->hasBody()) {
+      if (f->getNameInfo().getAsString() == topFuncName) {
+        Stmt *funcBody = f->getBody();
+        SourceLocation locStart = funcBody->getBeginLoc();
+        SourceLocation locEnd = funcBody->getEndLoc();
+        TheRewriter.RemoveText(SourceRange(locStart, locEnd));
+        std::string text;
+        text += "{\n" + beforeWhileText;
+        text += "\nbool reset = false;\n unsigned reset_cnt = 0;\n";
+        text += "while (1) {\n #pragma HLS pipeline\n";
+        text += "bool dummy;\n";
+        text += "if (reset || (reset = reset_" + topFuncName +
+                ".read_nb(dummy))) {\n";
+        text += resetText;
+        text += "reset_cnt ++;\n";
+        text += "if (reset_cnt == RESET_CNT) {\n";
+        text += "reset_cnt = 0;\n";
+        text += "reset = false;\n";
+        text += "}\n}\n";
+        text += "else ";
+        text += whileBodyText;
+        text += "}\n}\n}";
+        TheRewriter.InsertText(locStart, text);
       }
     }
-    
+
     return true;
   }
 
@@ -71,129 +68,127 @@ private:
   std::string &whileBodyText;
 };
 
-class InfoExtractionVisitor : public RecursiveASTVisitor<InfoExtractionVisitor> {
+class InfoExtractionVisitor
+    : public RecursiveASTVisitor<InfoExtractionVisitor> {
 public:
   InfoExtractionVisitor(Rewriter &R) : TheRewriter(R) {}
 
   bool VisitFunctionDecl(FunctionDecl *f) {
-    if (f -> hasBody()) {      
-      if (f -> getNameInfo().getAsString() == topFuncName) {
-	catchTopFunc = true;
-	for (ParmVarDecl *param : f -> parameters()) {
-	  std::string fifoType = param -> getType().getAsString();
-	  int lPos = fifoType.find("<");
-	  int rPos = fifoType.rfind(">");
-	  std::string fifoDataType = fifoType.substr(lPos + 1, rPos - lPos - 1);
-	  std::string fifoName = param -> getName();
-	  fifoSet.insert(fifoName);
-	  fifoDataTypeMap[fifoName] = fifoDataType;
-	}
-       	
-	ParmVarDecl *firstParmVarDecl;
-	firstParmVarDecl = *(f ->  param_begin());
-	TheRewriter.InsertText(firstParmVarDecl -> getSourceRange().getBegin(), 
-			       "ST_Queue<bool> &reset_" + topFuncName + ",\n", true, true);
-	Stmt *body = f -> getBody();
-	StmtIterator lastIter;
-	for (auto iter = body -> child_begin(); iter != body -> child_end(); iter ++) {
-	  Stmt *childStmt = *iter;
-	  if (!strcmp(childStmt -> getStmtClassName(), "WhileStmt")) {
-	    if (iter != body -> child_begin()) {
-	      beforeWhileText += retrieveFilteredText(*lastIter, childStmt);
-	    }
-	    break;
-	  }	  
-	  else if (!strcmp(childStmt -> getStmtClassName(), "DeclStmt")) {
-	    DeclStmt *declStmt = (DeclStmt *)childStmt;
-	    for (auto decl_iter : declStmt -> decls()) {
-	      VarDecl *varDecl = (VarDecl *)decl_iter;
-	      if (varDecl -> hasInit()) {
-		std::string varName = varDecl -> getNameAsString();
-		std::string initVal = toString(varDecl -> getInit());
-		if (varDecl -> isDirectInit()) {
-		  std::string typeText = varDecl -> getType().getAsString();
-		  std::vector<std::string> qualifierVec{"struct", "class", "enum"};
-		  for (auto qualifier : qualifierVec) {
-		    size_t pos;
-		    if ((pos = typeText.find(qualifier)) != std::string::npos) {
-		      typeText.replace(pos, qualifier.size(), "");
-		    }
-		  }
-		  if (typeText.find("[") == std::string::npos) {
-		    resetText += varName + " = " + typeText + "(" + initVal + ")" + ";\n";
-		  }
-		  else {
-		    // array type
-		    std::vector<std::string> dims;
-		    size_t pos = 0;
-		    while (1) {
-		      size_t left_paren = typeText.find("[", pos);
-		      size_t right_paren = typeText.find("]", pos);
-		      if (left_paren == std::string::npos) {
-			break;
-		      }
-		      dims.push_back(typeText.substr(left_paren + 1, right_paren - left_paren - 1));
-		      pos = right_paren + 1;
-		    }
-		    typeText = typeText.substr(0, typeText.find("["));
-		    for (size_t i = 0; i < dims.size(); i ++) {
-		      std::string iterVar = "i" + std::to_string(i);
-		      resetText += "for (int " + iterVar + " = 0; " + iterVar + 
-			+ " < " + dims[i] + "; " + iterVar + " ++) {\n";
-		    }
-		    resetText += varName;
-		    for (size_t i = 0; i < dims.size(); i ++)  {
-		      std::string iterVar = "i" + std::to_string(i);
-		      resetText += "[" + iterVar + "]";
-		    }
-		    resetText += " = " + typeText + "(" + initVal + ");\n";
-		    for (size_t i = 0; i < dims.size(); i ++) {
-		      resetText += "}\n";
-		    }
-		  }
-		}
-		else {
-		  resetText += varName + " = " + initVal + ";\n";
-		}
-	      }
-	    }
-	  }
-	  else {
-	    resetText += toString(childStmt) + ";\n";
-	  }
-	  beforeWhileText += toString(childStmt) + ";\n";
-	  if (iter != body -> child_begin()) {
-	    beforeWhileText += retrieveFilteredText(*lastIter, childStmt);
-	  }
-	  lastIter = iter;
-	}
-	dfs(body);
+    if (f->hasBody()) {
+      if (f->getNameInfo().getAsString() == topFuncName) {
+        catchTopFunc = true;
+        for (ParmVarDecl *param : f->parameters()) {
+          std::string fifoType = param->getType().getAsString();
+          int lPos = fifoType.find("<");
+          int rPos = fifoType.rfind(">");
+          std::string fifoDataType = fifoType.substr(lPos + 1, rPos - lPos - 1);
+          std::string fifoName = param->getName();
+          fifoSet.insert(fifoName);
+          fifoDataTypeMap[fifoName] = fifoDataType;
+        }
+
+        ParmVarDecl *firstParmVarDecl;
+        firstParmVarDecl = *(f->param_begin());
+        TheRewriter.InsertText(firstParmVarDecl->getSourceRange().getBegin(),
+                               "ST_Queue<bool> &reset_" + topFuncName + ",\n",
+                               true, true);
+        Stmt *body = f->getBody();
+        StmtIterator lastIter;
+        for (auto iter = body->child_begin(); iter != body->child_end();
+             iter++) {
+          Stmt *childStmt = *iter;
+          if (!strcmp(childStmt->getStmtClassName(), "WhileStmt")) {
+            if (iter != body->child_begin()) {
+              beforeWhileText += retrieveFilteredText(*lastIter, childStmt);
+            }
+            break;
+          } else if (!strcmp(childStmt->getStmtClassName(), "DeclStmt")) {
+            DeclStmt *declStmt = (DeclStmt *)childStmt;
+            for (auto decl_iter : declStmt->decls()) {
+              VarDecl *varDecl = (VarDecl *)decl_iter;
+              if (varDecl->hasInit()) {
+                std::string varName = varDecl->getNameAsString();
+                std::string initVal = toString(varDecl->getInit());
+                if (varDecl->isDirectInit()) {
+                  std::string typeText = varDecl->getType().getAsString();
+                  std::vector<std::string> qualifierVec{"struct", "class",
+                                                        "enum"};
+                  for (auto qualifier : qualifierVec) {
+                    size_t pos;
+                    if ((pos = typeText.find(qualifier)) != std::string::npos) {
+                      typeText.replace(pos, qualifier.size(), "");
+                    }
+                  }
+                  if (typeText.find("[") == std::string::npos) {
+                    resetText += varName + " = " + typeText + "(" + initVal +
+                                 ")" + ";\n";
+                  } else {
+                    // array type
+                    std::vector<std::string> dims;
+                    size_t pos = 0;
+                    while (1) {
+                      size_t left_paren = typeText.find("[", pos);
+                      size_t right_paren = typeText.find("]", pos);
+                      if (left_paren == std::string::npos) {
+                        break;
+                      }
+                      dims.push_back(typeText.substr(
+                          left_paren + 1, right_paren - left_paren - 1));
+                      pos = right_paren + 1;
+                    }
+                    typeText = typeText.substr(0, typeText.find("["));
+                    for (size_t i = 0; i < dims.size(); i++) {
+                      std::string iterVar = "i" + std::to_string(i);
+                      resetText += "for (int " + iterVar + " = 0; " + iterVar +
+                                   +" < " + dims[i] + "; " + iterVar +
+                                   " ++) {\n";
+                    }
+                    resetText += varName;
+                    for (size_t i = 0; i < dims.size(); i++) {
+                      std::string iterVar = "i" + std::to_string(i);
+                      resetText += "[" + iterVar + "]";
+                    }
+                    resetText += " = " + typeText + "(" + initVal + ");\n";
+                    for (size_t i = 0; i < dims.size(); i++) {
+                      resetText += "}\n";
+                    }
+                  }
+                } else {
+                  resetText += varName + " = " + initVal + ";\n";
+                }
+              }
+            }
+          } else {
+            resetText += toString(childStmt) + ";\n";
+          }
+          beforeWhileText += toString(childStmt) + ";\n";
+          if (iter != body->child_begin()) {
+            beforeWhileText += retrieveFilteredText(*lastIter, childStmt);
+          }
+          lastIter = iter;
+        }
+        dfs(body);
       }
     }
     return true;
   }
 
-  std::string &getResetText() {
-    return resetText;
-  }
- 
-  std::string &getWhileBodyText() {
-    return whileBodyText;
-  }
+  std::string &getResetText() { return resetText; }
 
-  std::string &getBeforeWhileText() {
-    return beforeWhileText;
-  }
-  
+  std::string &getWhileBodyText() { return whileBodyText; }
+
+  std::string &getBeforeWhileText() { return beforeWhileText; }
+
   std::string retrieveFilteredText(Stmt *lastStmt, Stmt *curStmt) {
-    SourceLocation locStart = lastStmt -> getEndLoc();
-    SourceLocation locEnd = curStmt -> getBeginLoc();
+    SourceLocation locStart = lastStmt->getEndLoc();
+    SourceLocation locEnd = curStmt->getBeginLoc();
     SourceManager &SM = TheRewriter.getSourceMgr();
     std::string text = std::string(SM.getCharacterData(locStart),
-				   SM.getCharacterData(locEnd) - SM.getCharacterData(locStart));
+                                   SM.getCharacterData(locEnd) -
+                                       SM.getCharacterData(locStart));
     return text;
   }
-  
+
 private:
   Rewriter &TheRewriter;
   std::string beforeWhileText;
@@ -206,52 +201,56 @@ private:
   std::string toString(Stmt *stmt) {
     std::string string_buf;
     llvm::raw_string_ostream ros(string_buf);
-    stmt -> printPretty(ros, nullptr, PrintingPolicy(LangOptions()));
+    stmt->printPretty(ros, nullptr, PrintingPolicy(LangOptions()));
     return ros.str();
   }
 
   std::string toString(Decl *decl) {
     std::string string_buf;
     llvm::raw_string_ostream ros(string_buf);
-    decl -> print(ros);
+    decl->print(ros);
     return ros.str();
   }
 
   std::string toRawString(Stmt *stmt) {
-    SourceLocation locStart = stmt -> getBeginLoc();
-    SourceLocation locEnd = stmt -> getEndLoc();
+    SourceLocation locStart = stmt->getBeginLoc();
+    SourceLocation locEnd = stmt->getEndLoc();
     SourceManager &SM = TheRewriter.getSourceMgr();
     std::string text = std::string(SM.getCharacterData(locStart),
-				   SM.getCharacterData(locEnd) - SM.getCharacterData(locStart));
+                                   SM.getCharacterData(locEnd) -
+                                       SM.getCharacterData(locStart));
     return text;
   }
 
   void dfs(Stmt *root) {
-    for (auto iter = root -> child_begin(); iter != root -> child_end(); iter ++) {
-      Stmt *curStmt = *iter;      
+    for (auto iter = root->child_begin(); iter != root->child_end(); iter++) {
+      Stmt *curStmt = *iter;
       if (curStmt) {
-	if (!strcmp(curStmt -> getStmtClassName(), "WhileStmt")) {
-	  WhileStmt *whileStmt = (WhileStmt *)curStmt;
-	  Stmt *whileBody = whileStmt -> getBody();	  
-	  whileBodyText = toRawString(whileBody);
-	}
-	else if (!strcmp(curStmt -> getStmtClassName(), "CXXMemberCallExpr")) {
-	  CXXMemberCallExpr *cxxMemberCallExpr = (CXXMemberCallExpr *)curStmt;
-	  std::string methodName = cxxMemberCallExpr -> getMethodDecl() -> getNameInfo().getAsString();
-	  if (methodName == "read" || methodName == "read_nb") {
-	    std::string fifoName = toString(cxxMemberCallExpr -> getImplicitObjectArgument());
-	    if (fifoSet.count(fifoName) && !ResetFifoMap[fifoName]) {
-	      static int resetVarCnt = 0;
-	      std::string fifoDataType = fifoDataTypeMap[fifoName];
-	      std::string resetVarText = "dummy" + std::to_string(resetVarCnt ++);
-	      resetText += fifoDataType + " " + resetVarText  + ";\n";
-	      resetText += fifoName + ".read_nb(" + resetVarText + ");\n";
-	      ResetFifoMap[fifoName] = true;
-	    }
-	  }
-	  std::string callerStr = toString(cxxMemberCallExpr -> getImplicitObjectArgument());	  
-	}
-	dfs(curStmt);
+        if (!strcmp(curStmt->getStmtClassName(), "WhileStmt")) {
+          WhileStmt *whileStmt = (WhileStmt *)curStmt;
+          Stmt *whileBody = whileStmt->getBody();
+          whileBodyText = toRawString(whileBody);
+        } else if (!strcmp(curStmt->getStmtClassName(), "CXXMemberCallExpr")) {
+          CXXMemberCallExpr *cxxMemberCallExpr = (CXXMemberCallExpr *)curStmt;
+          std::string methodName =
+              cxxMemberCallExpr->getMethodDecl()->getNameInfo().getAsString();
+          if (methodName == "read" || methodName == "read_nb") {
+            std::string fifoName =
+                toString(cxxMemberCallExpr->getImplicitObjectArgument());
+            if (fifoSet.count(fifoName) && !ResetFifoMap[fifoName]) {
+              static int resetVarCnt = 0;
+              std::string fifoDataType = fifoDataTypeMap[fifoName];
+              std::string resetVarText =
+                  "dummy" + std::to_string(resetVarCnt++);
+              resetText += fifoDataType + " " + resetVarText + ";\n";
+              resetText += fifoName + ".read_nb(" + resetVarText + ");\n";
+              ResetFifoMap[fifoName] = true;
+            }
+          }
+          std::string callerStr =
+              toString(cxxMemberCallExpr->getImplicitObjectArgument());
+        }
+        dfs(curStmt);
       }
     }
   }
@@ -266,16 +265,16 @@ public:
     for (DeclGroupRef::iterator b = DR.begin(), e = DR.end(); b != e; ++b) {
       infoExtractionVisitor.TraverseDecl(*b);
     }
-    RewritingVisitor rewritingVisitor(TheRewriter, 
-				      infoExtractionVisitor.getBeforeWhileText(),
-				      infoExtractionVisitor.getResetText(), 
-				      infoExtractionVisitor.getWhileBodyText()
-				      );
+    RewritingVisitor rewritingVisitor(
+        TheRewriter, infoExtractionVisitor.getBeforeWhileText(),
+        infoExtractionVisitor.getResetText(),
+        infoExtractionVisitor.getWhileBodyText());
     for (DeclGroupRef::iterator b = DR.begin(), e = DR.end(); b != e; ++b) {
       rewritingVisitor.TraverseDecl(*b);
     }
     return true;
   }
+
 private:
   Rewriter &TheRewriter;
 };
@@ -289,7 +288,7 @@ public:
   }
 
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
-						 StringRef file) override {
+                                                 StringRef file) override {
     TheRewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
     return llvm::make_unique<MyASTConsumer>(TheRewriter);
   }
@@ -310,7 +309,8 @@ int main(int argc, const char **argv) {
   ClangTool Tool(op.getCompilations(), op.getSourcePathList());
   int ret = Tool.run(newFrontendActionFactory<MyFrontendAction>().get());
   if (!catchTopFunc) {
-    llvm::errs() << "Error: In file " + std::string(argv[1]) + ": Cannot find the top function!\n";
+    llvm::errs() << "Error: In file " + std::string(argv[1]) +
+                        ": Cannot find the top function!\n";
     return -1;
   }
   return ret;

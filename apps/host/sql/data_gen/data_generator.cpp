@@ -1,10 +1,10 @@
-#include <vector>
-#include <string>
+#include "../inc/const.h"
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <omp.h>
-#include <cstdlib>
-#include "../inc/const.h"
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -18,7 +18,7 @@ char random_char() {
 
 string random_str(int len) {
   string s = "";
-  for (int i = 0; i < len; i ++) {
+  for (int i = 0; i < len; i++) {
     s += random_char();
   }
   return s;
@@ -28,11 +28,11 @@ int main() {
   freopen("sql_data.txt", "w", stdout);
   ios::sync_with_stdio(false);
 
-  for (int i = 0; i < ROUND_NUM; i ++) {
+  for (int i = 0; i < ROUND_NUM; i++) {
     round_name_vec.push_back(random_str(ROUND_NAME_LEN));
   }
 
-  for (int i = 0; i < ROW_NUM; i ++) {
+  for (int i = 0; i < ROW_NUM; i++) {
     string round_name = round_name_vec[rand() % round_name_vec.size()];
 
     string player_name = random_str(PLAYER_NAME_LEN);
@@ -45,7 +45,7 @@ int main() {
     string month = to_string(rand() % 12 + 1);
     while (month.size() < MONTH_LEN) {
       month = "0" + month;
-    }    
+    }
 
     string day = to_string(rand() % 30 + 1);
     while (day.size() < DAY_LEN) {
@@ -62,7 +62,7 @@ int main() {
       cout << endl;
     }
     assert(record_str.size() == 32);
-    
+
     cout << record_str;
   }
 

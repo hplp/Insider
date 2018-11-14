@@ -1,7 +1,7 @@
 #ifndef CONST_H
 #define CONST_H
 
-#define NUM_TRAIN_CASES (14680064) // should be the multiples of READ_BUF_SIZE                                                                                
+#define NUM_TRAIN_CASES (14680064) // should be the multiples of READ_BUF_SIZE
 #define NUM_PREDICTING_CASES (8)
 #define FEATURE_DIM (4096)
 #define NUM_RESULTS (32)

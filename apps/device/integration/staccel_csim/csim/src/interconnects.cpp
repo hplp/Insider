@@ -346,105 +346,105 @@ unsigned char raw_data[FILE_COL_NUM * FILE_ROW_NUM];
 unsigned char expected_output_buf[FILE_ROW_NUM * APP_RECORD_LENGTH];
 
 char random_char() {
-    int min_ascii = 65;
-    int max_ascii = 90;
-    return min_ascii + rand() % (max_ascii - min_ascii + 1);
+  int min_ascii = 65;
+  int max_ascii = 90;
+  return min_ascii + rand() % (max_ascii - min_ascii + 1);
 }
 
 void integration() {
-    unsigned char *expected_buf_ptr = expected_output_buf;
-    unsigned char *record = raw_data;
-    int numOfMatch = 0; 
-    bool match;
-    for (int record_idx = 0; record_idx < FILE_ROW_NUM; record_idx++) {
-        match = false;
-        for (int i = 0; i < APP_QUERY_THRES; i++) {
-            for (int j = 0; j < APP_RECORD_THRES; j++) {
-                if (query[i] == record[j]) {
-                    match = true;
-                }
-            }
+  unsigned char *expected_buf_ptr = expected_output_buf;
+  unsigned char *record = raw_data;
+  int numOfMatch = 0;
+  bool match;
+  for (int record_idx = 0; record_idx < FILE_ROW_NUM; record_idx++) {
+    match = false;
+    for (int i = 0; i < APP_QUERY_THRES; i++) {
+      for (int j = 0; j < APP_RECORD_THRES; j++) {
+        if (query[i] == record[j]) {
+          match = true;
         }
-        if (match) {
-            int overlap = 0;
-            for (int i = 0; i < APP_QUERY_LENGTH; i++) {
-                for (int j = 0 ; j < APP_QUERY_LENGTH; j++) {
-                    if (query[i] == record[j]) {
-                        overlap++;
-                    }
-                }
-            }
-            if (overlap > APP_QUERY_LENGTH - APP_QUERY_THRES) {
-                numOfMatch++;
-                for (int i = 0; i < APP_RECORD_LENGTH; i++) {
-                    *expected_buf_ptr++ = record[i];
-                }
-            }
-        }
-        record += APP_RECORD_LENGTH;
+      }
     }
-    cout << "expected number of matches is: " << numOfMatch 
-        << " (" << FILE_ROW_NUM  << " in total)" << endl;
+    if (match) {
+      int overlap = 0;
+      for (int i = 0; i < APP_QUERY_LENGTH; i++) {
+        for (int j = 0; j < APP_QUERY_LENGTH; j++) {
+          if (query[i] == record[j]) {
+            overlap++;
+          }
+        }
+      }
+      if (overlap > APP_QUERY_LENGTH - APP_QUERY_THRES) {
+        numOfMatch++;
+        for (int i = 0; i < APP_RECORD_LENGTH; i++) {
+          *expected_buf_ptr++ = record[i];
+        }
+      }
+    }
+    record += APP_RECORD_LENGTH;
+  }
+  cout << "expected number of matches is: " << numOfMatch << " ("
+       << FILE_ROW_NUM << " in total)" << endl;
 }
 
 int gen_data() {
-    for (int i = 0; i < FILE_ROW_NUM*FILE_COL_NUM; i++) {
-        raw_data[i] = random_char();
-    }
-    for (int i = 0; i < 32; i++) {
-        query[i] = random_char();
-    }
+  for (int i = 0; i < FILE_ROW_NUM * FILE_COL_NUM; i++) {
+    raw_data[i] = random_char();
+  }
+  for (int i = 0; i < 32; i++) {
+    query[i] = random_char();
+  }
 }
 
 void user_simulation_function() {
-    // PUT YOUR CODE HERE
-    gen_data();
-    set_physical_file((unsigned char *) raw_data, sizeof(raw_data));
+  // PUT YOUR CODE HERE
+  gen_data();
+  set_physical_file((unsigned char *)raw_data, sizeof(raw_data));
 
-    send_input_param(((APP_RECORD_THRES << 16) |(APP_QUERY_THRES)));
-    unsigned int *query_ptr_in_4B = (unsigned int*) query;
-    for (int i = 0; i < 8; i++) {
-        send_input_param(query_ptr_in_4B[i]); 
+  send_input_param(((APP_RECORD_THRES << 16) | (APP_QUERY_THRES)));
+  unsigned int *query_ptr_in_4B = (unsigned int *)query;
+  for (int i = 0; i < 8; i++) {
+    send_input_param(query_ptr_in_4B[i]);
+  }
+
+  cout << "send input params ends..." << endl;
+
+  integration();
+
+  cout << "expected data generated..." << endl;
+
+  int fd = iopen("csim_phy_file", 0);
+  unsigned char *buf = (unsigned char *)malloc(READ_BUF_SIZE);
+  bool fin_file = false;
+
+  cout << "file opened..." << endl;
+
+  unsigned char *expected_output_buf_in_bytes =
+      (unsigned char *)expected_output_buf;
+
+  while (!fin_file) {
+    int read_bytes = 0;
+    while (read_bytes != READ_BUF_SIZE) {
+      int tmp = iread(fd, buf, READ_BUF_SIZE - read_bytes);
+      if (!tmp) {
+        fin_file = true;
+        break;
+      } else {
+        read_bytes += tmp;
+      }
     }
-
-    cout << "send input params ends..." << endl;
-
-    integration();
-
-    cout << "expected data generated..." << endl;
-
-    int fd = iopen("csim_phy_file", 0);
-    unsigned char *buf = (unsigned char *)malloc(READ_BUF_SIZE);
-    bool fin_file = false;
-
-    cout << "file opened..." << endl;
-
-    unsigned char *expected_output_buf_in_bytes = (unsigned char *)expected_output_buf;
-
-    while (!fin_file) {
-        int read_bytes = 0;
-        while (read_bytes != READ_BUF_SIZE) {
-            int tmp = iread(fd, buf, READ_BUF_SIZE - read_bytes);
-            if (!tmp) {
-                fin_file = true;
-                break;
-            }
-            else {
-                read_bytes += tmp;
-            }
-        }
-        cout << read_bytes << endl;
-        for (int i = 0; i < read_bytes; i ++) {
-            unsigned char real = buf[i];
-            unsigned char expected = expected_output_buf_in_bytes[i];
-            cout << real << " : " << expected << endl;
-            if (real != expected) {
-                std::cout << "Failed!" << std::endl;
-                exit(-1);
-            }
-        }
-        expected_output_buf_in_bytes += read_bytes;
+    cout << read_bytes << endl;
+    for (int i = 0; i < read_bytes; i++) {
+      unsigned char real = buf[i];
+      unsigned char expected = expected_output_buf_in_bytes[i];
+      cout << real << " : " << expected << endl;
+      if (real != expected) {
+        std::cout << "Failed!" << std::endl;
+        exit(-1);
+      }
     }
-    std::cout << "Passed!" << std::endl;
-    iclose(fd);
+    expected_output_buf_in_bytes += read_bytes;
+  }
+  std::cout << "Passed!" << std::endl;
+  iclose(fd);
 }

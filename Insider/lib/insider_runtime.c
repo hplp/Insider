@@ -1,12 +1,12 @@
 #define _GNU_SOURCE
-#include <stdio.h>
 #include <dlfcn.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <omp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <unistd.h>
 
 #define MAX_CMD_LEN (4096)
 #define MAX_PATH_LEN (4096)
@@ -33,7 +33,9 @@ const char DEVICE_NAME[] = "/dev/nvme_fpga";
 const char MAPPINGS_FILE[] = ".virt_file_mappings";
 
 const char FILEFRAG_CMD[] = "filefrag -v ";
-const char FILEFRAG_FILTER_CMD[] = " | cut -d \":\" -f 3,4 | awk 'NR > 3' | sed \"s/.* \\([0-9]\\+\\)\\.\\..*:\\(.*\\)/\\1 \\2/g\"";
+const char FILEFRAG_FILTER_CMD[] =
+    " | cut -d \":\" -f 3,4 | awk 'NR > 3' | sed \"s/.* "
+    "\\([0-9]\\+\\)\\.\\..*:\\(.*\\)/\\1 \\2/g\"";
 const char DF_CMD[] = "df ";
 const char DF_FILTER_CMD[] = " | sed \"2, 2p\" -n | awk '{print $1}'";
 const char LS_CMD[] = "ls -l ";
@@ -60,7 +62,7 @@ void send_input_params(unsigned int data) {
 
 void send_input_params_array(unsigned int *data_arr, size_t arr_len) {
   int i = 0;
-  for (i = 0; i < arr_len; i ++) {
+  for (i = 0; i < arr_len; i++) {
     *((volatile unsigned int *)mmio_space + APP_INPUT_PARAM_TAG) = data_arr[i];
   }
 }
@@ -69,11 +71,10 @@ __inline__ static void send_control_msg(int tag, unsigned int data) {
   *((volatile unsigned int *)mmio_space + tag) = data;
 }
 
-static void get_file_info(const char *real_file_name, 
-			     unsigned int *num_extents, 
-			     unsigned int *extents_start_arr,
-			     unsigned int *extents_len_arr,
-			     unsigned long long *file_size) {
+static void get_file_info(const char *real_file_name, unsigned int *num_extents,
+                          unsigned int *extents_start_arr,
+                          unsigned int *extents_len_arr,
+                          unsigned long long *file_size) {
   FILE *fp;
   char *buf = malloc(MAX_CMD_OUTPUT_LEN);
   char *cmd = malloc(MAX_CMD_LEN);
@@ -91,16 +92,16 @@ static void get_file_info(const char *real_file_name,
   while (sscanf(filefrag_output, "%u %u", &start, &len) > 0) {
     extents_start_arr[*num_extents] = start;
     extents_len_arr[*num_extents] = len;
-    (*num_extents) ++;
+    (*num_extents)++;
     filefrag_output = strstr(filefrag_output, "\n");
     if (filefrag_output) {
-      filefrag_output ++;
-    }
-    else {
+      filefrag_output++;
+    } else {
       break;
     }
   }
-  if (fp) pclose(fp);
+  if (fp)
+    pclose(fp);
 
   // get file size
   cmd[0] = 0;
@@ -110,8 +111,9 @@ static void get_file_info(const char *real_file_name,
   fp = popen(cmd, "r");
   fgets(buf, MAX_CMD_OUTPUT_LEN, fp);
   sscanf(buf, "%llu", file_size);
-  if (fp) pclose(fp);
-  
+  if (fp)
+    pclose(fp);
+
   free(buf);
   free(cmd);
 }
@@ -131,12 +133,10 @@ static int is_from_nvme_fpga(const char *pathname) {
   return 0;
 }
 
-static int is_registered(const char *pathname,
-			 unsigned int *num_extents,
-			 unsigned int *extents_start_arr,
-			 unsigned int *extents_len_arr,
-			 unsigned long long *file_size
-		  ) {
+static int is_registered(const char *pathname, unsigned int *num_extents,
+                         unsigned int *extents_start_arr,
+                         unsigned int *extents_len_arr,
+                         unsigned long long *file_size) {
   const char *pos = strrchr(pathname, '/');
   char *mappings_path = malloc(MAX_PATH_LEN);
   char *relative_pathname = malloc(MAX_PATH_LEN);
@@ -152,11 +152,13 @@ static int is_registered(const char *pathname,
   if (fp) {
     while (fscanf(fp, "%s %s", real_file_name, virt_file_name) != EOF) {
       if (!strcmp(virt_file_name, relative_pathname)) {
-	ret = 1;
-	memmove(real_file_name + prefix_len, real_file_name, strlen(real_file_name) + 1);
-	memmove(real_file_name, pathname, prefix_len);
-	get_file_info(real_file_name, num_extents, extents_start_arr, extents_len_arr, file_size);
-	break;
+        ret = 1;
+        memmove(real_file_name + prefix_len, real_file_name,
+                strlen(real_file_name) + 1);
+        memmove(real_file_name, pathname, prefix_len);
+        get_file_info(real_file_name, num_extents, extents_start_arr,
+                      extents_len_arr, file_size);
+        break;
       }
     }
   }
@@ -164,17 +166,18 @@ static int is_registered(const char *pathname,
   free(relative_pathname);
   free(real_file_name);
   free(virt_file_name);
-  if (fp) fclose(fp);
+  if (fp)
+    fclose(fp);
   return ret;
 }
 
-static int is_virtual_file(const char *pathname, 
-			   unsigned int *num_extents,
-			   unsigned int *extents_start_arr,
-			   unsigned int *extents_len_arr,
-			   unsigned long long *file_size
-			   ) {
-  return is_from_nvme_fpga(pathname) && is_registered(pathname, num_extents, extents_start_arr, extents_len_arr, file_size);
+static int is_virtual_file(const char *pathname, unsigned int *num_extents,
+                           unsigned int *extents_start_arr,
+                           unsigned int *extents_len_arr,
+                           unsigned long long *file_size) {
+  return is_from_nvme_fpga(pathname) &&
+         is_registered(pathname, num_extents, extents_start_arr,
+                       extents_len_arr, file_size);
 }
 
 static void *allocate_kernel_buf(int *configfd) {
@@ -184,7 +187,8 @@ static void *allocate_kernel_buf(int *configfd) {
     perror("Error in dma driver.");
     exit(-1);
   }
-  address = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, *configfd, 0);
+  address =
+      mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, *configfd, 0);
   if (address == MAP_FAILED) {
     perror("Mmap operation failed.");
     exit(-1);
@@ -197,7 +201,8 @@ static void setup_mmio(void) {
   if (mmio_fd < 0) {
     perror("Error for mmapping the mmio region,");
   }
-  mmio_space = mmap(NULL, MMIO_SPACE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, mmio_fd, 0);
+  mmio_space = mmap(NULL, MMIO_SPACE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,
+                    mmio_fd, 0);
   if (mmio_space == MAP_FAILED) {
     perror("Mmap operation failed.");
     exit(-1);
@@ -209,20 +214,16 @@ __inline__ static void update_metadata(void) {
   volatile unsigned char *flag_ptr;
   volatile unsigned char *metadata_ptr;
   do {
-    metadata_ptr = (volatile unsigned char *)(app_bufs[app_bufs_ptr] + BUF_METADATA_IDX);
-    flag_ptr = (volatile unsigned char *)(app_bufs[app_bufs_ptr] + BUF_METADATA_IDX + sizeof(unsigned int));
-    flag = 
-      ((*(flag_ptr + 3)) << 24) |
-      ((*(flag_ptr + 2)) << 16) |
-      ((*(flag_ptr + 1)) << 8)  |
-      ((*(flag_ptr + 0)) << 0);
-    metadata = 
-      ((*(metadata_ptr + 3)) << 24) |
-      ((*(metadata_ptr + 2)) << 16) |
-      ((*(metadata_ptr + 1)) << 8)  |
-      ((*(metadata_ptr + 0)) << 0);
-  }
-  while (!(flag));
+    metadata_ptr =
+        (volatile unsigned char *)(app_bufs[app_bufs_ptr] + BUF_METADATA_IDX);
+    flag_ptr =
+        (volatile unsigned char *)(app_bufs[app_bufs_ptr] + BUF_METADATA_IDX +
+                                   sizeof(unsigned int));
+    flag = ((*(flag_ptr + 3)) << 24) | ((*(flag_ptr + 2)) << 16) |
+           ((*(flag_ptr + 1)) << 8) | ((*(flag_ptr + 0)) << 0);
+    metadata = ((*(metadata_ptr + 3)) << 24) | ((*(metadata_ptr + 2)) << 16) |
+               ((*(metadata_ptr + 1)) << 8) | ((*(metadata_ptr + 0)) << 0);
+  } while (!(flag));
   *flag_ptr = *(flag_ptr + 1) = *(flag_ptr + 2) = *(flag_ptr + 3) = 0;
   buf_len = metadata >> 1;
   is_eop = metadata & 0x1;
@@ -257,7 +258,7 @@ const char *reg_virt_file(const char *real_path) {
   // update metadata
   fprintf(fp, "%s %s\n", relative_real_path, virt_file_name);
   // touch virtual file
-  FILE* cmd_fp;
+  FILE *cmd_fp;
   char *cmd = malloc(MAX_CMD_LEN);
   cmd[0] = 0;
   strcat(cmd, TOUCH_CMD);
@@ -267,24 +268,27 @@ const char *reg_virt_file(const char *real_path) {
   free(mappings_path);
   free(relative_real_path);
   free(virt_file_name);
-  if (fp) fclose(fp);
-  if (cmd_fp) pclose(cmd_fp);
+  if (fp)
+    fclose(fp);
+  if (cmd_fp)
+    pclose(cmd_fp);
   return absolute_virt_file_path;
 }
 
 int iopen(const char *pathname, int flags) {
   unsigned int num_extents;
-  unsigned int *extents_start_arr = malloc(sizeof(unsigned int) * MAX_EXTENT_NUM);
+  unsigned int *extents_start_arr =
+      malloc(sizeof(unsigned int) * MAX_EXTENT_NUM);
   unsigned int *extents_len_arr = malloc(sizeof(unsigned int) * MAX_EXTENT_NUM);
   unsigned long long length;
   long long offset;
-  if (!is_virtual_file(pathname, &num_extents, extents_start_arr, extents_len_arr, &length)) {
+  if (!is_virtual_file(pathname, &num_extents, extents_start_arr,
+                       extents_len_arr, &length)) {
     return -1;
-  }
-  else {
+  } else {
     int i;
     setup_mmio();
-    for (i = 0; i < ALLOCATED_BUF_NUM; i ++) {
+    for (i = 0; i < ALLOCATED_BUF_NUM; i++) {
       app_bufs[i] = allocate_kernel_buf(&app_buf_fds[i]);
       app_buf_phy_addrs[i] = *((unsigned long long *)app_bufs[i]);
       send_control_msg(APP_BUF_ADDRS_TAG, app_buf_phy_addrs[i] >> 32);
@@ -294,11 +298,13 @@ int iopen(const char *pathname, int flags) {
     send_control_msg(APP_FILE_INFO_TAG, length >> 32);
     send_control_msg(APP_FILE_INFO_TAG, length & 0xFFFFFFFF);
     offset = length;
-    for (i = 0; i < num_extents; i ++) {
-      unsigned long long extents_start_in_byte = ((unsigned long long)extents_start_arr[i]) * PHYSICAL_SECTOR_SIZE;      
+    for (i = 0; i < num_extents; i++) {
+      unsigned long long extents_start_in_byte =
+          ((unsigned long long)extents_start_arr[i]) * PHYSICAL_SECTOR_SIZE;
       send_control_msg(APP_FILE_INFO_TAG, extents_start_in_byte >> 32);
       send_control_msg(APP_FILE_INFO_TAG, extents_start_in_byte & 0xFFFFFFFF);
-      unsigned long long extents_len_in_byte = ((unsigned long long)extents_len_arr[i]) * PHYSICAL_SECTOR_SIZE;
+      unsigned long long extents_len_in_byte =
+          ((unsigned long long)extents_len_arr[i]) * PHYSICAL_SECTOR_SIZE;
       offset -= extents_len_in_byte;
       extents_len_in_byte += (offset > 0) ? 0 : offset;
       send_control_msg(APP_FILE_INFO_TAG, extents_len_in_byte >> 32);
@@ -321,8 +327,10 @@ void parallel_memcpy(void *dest, const void *src, size_t n) {
 #pragma omp parallel num_threads(PAR_MEMCPY_WORKERS)
   {
     int tid = omp_get_thread_num();
-    int copy_size = (tid != (PAR_MEMCPY_WORKERS - 1)) ? size_per_worker : size_last;
-    memcpy((unsigned char *)dest + size_per_worker * tid, (unsigned char *)src + size_per_worker * tid, copy_size);
+    int copy_size =
+        (tid != (PAR_MEMCPY_WORKERS - 1)) ? size_per_worker : size_last;
+    memcpy((unsigned char *)dest + size_per_worker * tid,
+           (unsigned char *)src + size_per_worker * tid, copy_size);
   }
 }
 
@@ -330,8 +338,7 @@ ssize_t iread(int fd, void *buf, size_t count) {
   if (fd == VIRT_FILE_FD) {
     if (file_finish_reading) {
       return 0;
-    }
-    else if (first) {
+    } else if (first) {
       update_metadata();
       first = 0;
     }
@@ -340,26 +347,23 @@ ssize_t iread(int fd, void *buf, size_t count) {
     if (count >= buf_len - buf_idx) {
       read_size = buf_len - buf_idx;
       if (is_eop) {
-	parallel_memcpy(buf, app_buf + buf_idx, read_size);
-	file_finish_reading = 1;
-	reset();
+        parallel_memcpy(buf, app_buf + buf_idx, read_size);
+        file_finish_reading = 1;
+        reset();
+      } else {
+        parallel_memcpy(buf, app_buf + buf_idx, read_size);
+        send_control_msg(APP_FREE_BUF_TAG, 0);
+        app_bufs_ptr = (app_bufs_ptr + 1) & (ALLOCATED_BUF_NUM - 1);
+        buf_idx = 0;
+        update_metadata();
       }
-      else {
-	parallel_memcpy(buf, app_buf + buf_idx, read_size);
-	send_control_msg(APP_FREE_BUF_TAG, 0);
-	app_bufs_ptr = (app_bufs_ptr + 1) & (ALLOCATED_BUF_NUM - 1);	
-	buf_idx = 0;
-	update_metadata();
-      }
-    }
-    else {
+    } else {
       read_size = count;
       parallel_memcpy(buf, app_buf + buf_idx, read_size);
       buf_idx += read_size;
     }
     return read_size;
-  }
-  else {
+  } else {
     return -1;
   }
 }
@@ -367,9 +371,9 @@ ssize_t iread(int fd, void *buf, size_t count) {
 int iclose(int fd) {
   if (fd == VIRT_FILE_FD) {
     int i;
-    for (i = 0; i < ALLOCATED_BUF_NUM; i ++) {
+    for (i = 0; i < ALLOCATED_BUF_NUM; i++) {
       if (app_buf_fds[i] > 0) {
-  	close(app_buf_fds[i]);
+        close(app_buf_fds[i]);
       }
     }
     if (mmio_fd) {
@@ -377,8 +381,7 @@ int iclose(int fd) {
     }
     send_control_msg(RESET_TAG, 0);
     return 0;
-  }
-  else {
+  } else {
     return -1;
   }
   return 0;

@@ -1,10 +1,10 @@
-#include <vector>
-#include <string>
+#include "../inc/const.h"
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <omp.h>
-#include <cstdlib>
-#include "../inc/const.h"
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -18,14 +18,14 @@ int main() {
   ios::sync_with_stdio(false);
 
   freopen("grep_input.txt", "w", stdout);
-  
-  for (int i = 0; i < FILE_ROW_NUM; i ++) {
+
+  for (int i = 0; i < FILE_ROW_NUM; i++) {
     string line = "";
-    for (int j = 0; j < FILE_COL_NUM - 1; j ++) {
+    for (int j = 0; j < FILE_COL_NUM - 1; j++) {
       line += random_char();
     }
     cout << line << endl;
   }
-  
+
   return 0;
 }

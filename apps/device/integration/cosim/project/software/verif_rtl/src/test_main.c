@@ -13,9 +13,9 @@
 // implied. See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <unistd.h>
 
 // Vivado does not support svGetScopeFromName
@@ -25,8 +25,8 @@
 #endif
 //#endif
 
-#include "sh_dpi_tasks.h"
 #include "insider_cosim.h"
+#include "sh_dpi_tasks.h"
 
 #define FILE_ROW_NUM (100)
 #define FILE_COL_NUM (64) // do not change it
@@ -59,7 +59,6 @@ void test_main(uint32_t *exit_code) {
   *exit_code = 0;
 }
 
-
 unsigned char query[32];
 unsigned char raw_data[FILE_COL_NUM * FILE_ROW_NUM];
 unsigned char expected_output_buf[FILE_ROW_NUM * APP_RECORD_LENGTH];
@@ -76,43 +75,43 @@ void integration() {
   int record_idx;
   unsigned char *expected_buf_ptr = expected_output_buf;
   unsigned char *record = raw_data;
-  int numOfMatch = 0; 
+  int numOfMatch = 0;
   char match = 0;
   for (record_idx = 0; record_idx < FILE_ROW_NUM; record_idx++) {
     match = 0;
     for (i = 0; i < APP_QUERY_THRES; i++) {
       for (j = 0; j < APP_RECORD_THRES; j++) {
-	if (query[i] == record[j]) {
-	  match = 1;
-	}
+        if (query[i] == record[j]) {
+          match = 1;
+        }
       }
     }
     if (match) {
       int overlap = 0;
       for (i = 0; i < APP_QUERY_LENGTH; i++) {
-	for (j = 0 ; j < APP_QUERY_LENGTH; j++) {
-	  if (query[i] == record[j]) {
-	    overlap++;
-	  }
-	}
+        for (j = 0; j < APP_QUERY_LENGTH; j++) {
+          if (query[i] == record[j]) {
+            overlap++;
+          }
+        }
       }
       if (overlap > APP_QUERY_LENGTH - APP_QUERY_THRES) {
-	numOfMatch++;
-	for (i = 0; i < APP_RECORD_LENGTH; i++) {
-	  *expected_buf_ptr++ = record[i];
-	}
+        numOfMatch++;
+        for (i = 0; i < APP_RECORD_LENGTH; i++) {
+          *expected_buf_ptr++ = record[i];
+        }
       }
     }
     record += APP_RECORD_LENGTH;
   }
-  printf("expected number of matches is: %d ( %d in total)",numOfMatch, FILE_ROW_NUM);
-
+  printf("expected number of matches is: %d ( %d in total)", numOfMatch,
+         FILE_ROW_NUM);
 }
 
 int gen_data() {
   int i;
   int j;
-  for (i = 0; i < FILE_ROW_NUM*FILE_COL_NUM; i++) {
+  for (i = 0; i < FILE_ROW_NUM * FILE_COL_NUM; i++) {
     raw_data[i] = random_char();
   }
   for (i = 0; i < 32; i++) {
@@ -124,12 +123,12 @@ void user_simulation_function() {
   gen_data();
   int i;
   int j;
-  set_physical_file((unsigned char *) raw_data, sizeof(raw_data));
+  set_physical_file((unsigned char *)raw_data, sizeof(raw_data));
 
-  send_input_param(((APP_RECORD_THRES << 16) |(APP_QUERY_THRES)));
-  unsigned int *query_ptr_in_4B = (unsigned int*) query;
+  send_input_param(((APP_RECORD_THRES << 16) | (APP_QUERY_THRES)));
+  unsigned int *query_ptr_in_4B = (unsigned int *)query;
   for (i = 0; i < 8; i++) {
-    send_input_param(query_ptr_in_4B[i]); 
+    send_input_param(query_ptr_in_4B[i]);
   }
 
   puts("send input params ends...");
@@ -139,12 +138,12 @@ void user_simulation_function() {
   puts("expected data generated...");
 
   /*
-    Wait for a while to ensure that the underlying RTL code has finished executing.
-    Keep poking signals to Insider system to prevent the simulation from being 
-    terminated (since the simulation framework would be terminated if there is
-    no active signal in the I/O interface).
+    Wait for a while to ensure that the underlying RTL code has finished
+    executing. Keep poking signals to Insider system to prevent the simulation
+    from being terminated (since the simulation framework would be terminated if
+    there is no active signal in the I/O interface).
    */
-  for (j = 0; j < 350; j ++) {
+  for (j = 0; j < 350; j++) {
     printf("j = %d\n", j);
     cl_poke(TAG(DEBUG_TAG), 0);
   }
@@ -155,28 +154,28 @@ void user_simulation_function() {
 
   puts("file opened...");
 
-  unsigned char *expected_output_buf_in_bytes = (unsigned char *)expected_output_buf;
+  unsigned char *expected_output_buf_in_bytes =
+      (unsigned char *)expected_output_buf;
 
   while (!fin_file) {
     int read_bytes = 0;
     while (read_bytes != READ_BUF_SIZE) {
       int tmp = iread(fd, buf, READ_BUF_SIZE - read_bytes);
       if (!tmp) {
-	fin_file = 1;
-	break;
-      }
-      else {
-	read_bytes += tmp;
+        fin_file = 1;
+        break;
+      } else {
+        read_bytes += tmp;
       }
     }
     printf("read bytes %d\n", read_bytes);
-    for (i = 0; i < read_bytes; i ++) {
+    for (i = 0; i < read_bytes; i++) {
       unsigned char real = buf[i];
       unsigned char expected = expected_output_buf_in_bytes[i];
-      //cout << real << " : " << expected << endl;
+      // cout << real << " : " << expected << endl;
       if (real != expected) {
-	puts("Failed!");
-	exit(-1);
+        puts("Failed!");
+        exit(-1);
       }
     }
     expected_output_buf_in_bytes += read_bytes;

@@ -9,7 +9,9 @@
 #define MONTH_LEN (2)
 #define DAY_LEN (2)
 #define YEAR_LEN (2)
-#define ROW_LEN (ROUND_NAME_LEN + PLAYER_NAME_LEN + SCORE_LEN + MONTH_LEN + DAY_LEN + YEAR_LEN)
+#define ROW_LEN                                                                \
+  (ROUND_NAME_LEN + PLAYER_NAME_LEN + SCORE_LEN + MONTH_LEN + DAY_LEN +        \
+   YEAR_LEN)
 
 #define READ_BUF_SIZE (1024 * 1024 * 2)
 #define YEAR_LOWER_THRESH (50)
