@@ -46,7 +46,7 @@ For both instances, you should use the FPGA developer AMI, which can be found at
 
   1. Make sure you choose the AMI version as 1.4.0. It could be found at the panel of "FPGA Developer AMI" via `Previous versions -> Continue to Configuration`. The reason behinds this is that the newer version of AMI adopts more recent Vivado HLS tool, which has a significant lower performance on synthesizing some of our kernels.
   
-  2. Make sure that you configure the compilation instance to have more than 200 GB storage.
+  2. Make sure that you configure the compilation instance to have more than 250 GB storage.
   
 In order to save your time, you could follow the instructions below to set up the compilation instance first. After that you could copy the drive volumn (via creating a snapshot and then creating a volumn based on the snapshot in the EC2 web console) to the FPGA instance so that you don't need redo all the steps. 
 
