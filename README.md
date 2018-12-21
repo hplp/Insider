@@ -95,7 +95,7 @@ Some functionality of Insider compiler is implemented based on LLVM and Clang, w
 ```
 $ sudo yum install cmake3 svn
 $ cd $PATH_TO_LLVM
-$ svn checkout http://llvm.org/svn/llvm-project/llvm/trunk@346828
+$ svn checkout http://llvm.org/svn/llvm-project/llvm/trunk@346828 llvm
 $ cd llvm/tools; svn co http://llvm.org/svn/llvm-project/cfe/trunk clang
 $ cd $PATH_TO_LLVM; mkdir build; cd build; cmake3 $PATH_TO_LLVM/llvm
 $ make -j16 # Replace 16 with the number of cores of your instance
