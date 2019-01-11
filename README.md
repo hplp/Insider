@@ -1,10 +1,10 @@
-# Insider
+# NAME REMOVE FOR BLIND REVIEW
 ![Status](https://img.shields.io/badge/Version-Experimental-green.svg)
 ![License](https://img.shields.io/cran/l/devtools.svg)
 
 ## Table of Contents
 
-- [Insider](#insider)
+- [NAME REMOVE FOR BLIND REVIEW](#insider)
   * [Paper](#paper)
   * [Restrictions](#restrictions)
   * [Preliminaries](#preliminaries)
