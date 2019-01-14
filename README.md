@@ -169,7 +169,7 @@ $ staccel_syn
 ```
 Then, You can simply follow the [standard process in AWS F1](https://github.com/aws/aws-fpga/tree/master/hdk#step2) to continue. Simply invoke the script to trigger the Vivado suite to synthesize the project.
 ```
-$ project/build/scripts/aws_build_dcp_from_cl.sh
+$ cd project/build/scripts; ./aws_build_dcp_from_cl.sh
 ```
 You can track the progress via tailing the log file. The synthesis usually takes about three hours. 
 ```
