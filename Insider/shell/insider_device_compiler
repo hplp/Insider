@@ -55,3 +55,8 @@ done
 
 insider_reset_syn $kernelSources | clang-format --style=llvm >staccel/kernels/reset_propaganda.cpp
 wait
+
+for kernelSource in $kernelSources;
+do
+    sed "s/\(.*\)__attribute__((annotate(\"no_reset\")))\(.*\)/\1\2/g" staccel/kernels/$kernelSource -i
+done

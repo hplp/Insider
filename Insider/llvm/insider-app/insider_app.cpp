@@ -124,33 +124,47 @@ public:
                                  ")" + ";\n";
                   } else {
                     // array type
-                    std::vector<std::string> dims;
-                    size_t pos = 0;
-                    while (1) {
-                      size_t left_paren = typeText.find("[", pos);
-                      size_t right_paren = typeText.find("]", pos);
-                      if (left_paren == std::string::npos) {
-                        break;
+                    bool no_reset = false;
+                    if (varDecl->hasAttrs()) {
+                      for (const Attr *attr : varDecl->getAttrs()) {
+                        const AnnotateAttr *annot = (const AnnotateAttr *)attr;
+                        if (attr) {
+                          llvm::StringRef text_ref = annot->getAnnotation();
+                          if (text_ref.str() == "no_reset") {
+                            no_reset = true;
+                          }
+                        }
                       }
-                      dims.push_back(typeText.substr(
-                          left_paren + 1, right_paren - left_paren - 1));
-                      pos = right_paren + 1;
                     }
-                    typeText = typeText.substr(0, typeText.find("["));
-                    for (size_t i = 0; i < dims.size(); i++) {
-                      std::string iterVar = "i" + std::to_string(i);
-                      resetText += "for (int " + iterVar + " = 0; " + iterVar +
-                                   +" < " + dims[i] + "; " + iterVar +
-                                   " ++) {\n";
-                    }
-                    resetText += varName;
-                    for (size_t i = 0; i < dims.size(); i++) {
-                      std::string iterVar = "i" + std::to_string(i);
-                      resetText += "[" + iterVar + "]";
-                    }
-                    resetText += " = " + typeText + "(" + initVal + ");\n";
-                    for (size_t i = 0; i < dims.size(); i++) {
-                      resetText += "}\n";
+                    if (!no_reset) {
+                      std::vector<std::string> dims;
+                      size_t pos = 0;
+                      while (1) {
+                        size_t left_paren = typeText.find("[", pos);
+                        size_t right_paren = typeText.find("]", pos);
+                        if (left_paren == std::string::npos) {
+                          break;
+                        }
+                        dims.push_back(typeText.substr(
+                            left_paren + 1, right_paren - left_paren - 1));
+                        pos = right_paren + 1;
+                      }
+                      typeText = typeText.substr(0, typeText.find("["));
+                      for (size_t i = 0; i < dims.size(); i++) {
+                        std::string iterVar = "i" + std::to_string(i);
+                        resetText += "for (int " + iterVar + " = 0; " +
+                                     iterVar + +" < " + dims[i] + "; " +
+                                     iterVar + " ++) {\n";
+                      }
+                      resetText += varName;
+                      for (size_t i = 0; i < dims.size(); i++) {
+                        std::string iterVar = "i" + std::to_string(i);
+                        resetText += "[" + iterVar + "]";
+                      }
+                      resetText += " = " + typeText + "(" + initVal + ");\n";
+                      for (size_t i = 0; i < dims.size(); i++) {
+                        resetText += "}\n";
+                      }
                     }
                   }
                 } else {
