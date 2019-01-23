@@ -62,7 +62,7 @@ cp -r Insider/llvm/* $LLVM_SRC_PATH/tools/clang/tools
 cp -r STAccel/llvm/* $LLVM_SRC_PATH/tools/clang/tools
 cd $LLVM_BUILD_PATH
 cmake3 $LLVM_SRC_PATH
-make -j16
+make -j4
 sudo make install
 
 cd $orig_path
