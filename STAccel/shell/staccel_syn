@@ -4,7 +4,7 @@ function synthesis {
     echo "kernel name:" $1 1>log 2>&1
     echo "open_project" "hls" >> script.tcl
     echo "set_top" $1 >> script.tcl
-    echo "add_files" $1.cpp '-cflags "-I/usr/include/staccel -I/usr/include/insider -DSTACCEL_SYN"' >> script.tcl
+    echo "add_files" $1.cpp '-std=c++11 -cflags "-I/usr/include/staccel -I/usr/include/insider -DSTACCEL_SYN"' >> script.tcl
     echo "open_solution \"solution1\"" >> script.tcl
     echo "set_part {xcvu9p-flgb2104-2-i}" >> script.tcl
     echo "create_clock -period 4 -name default" >> script.tcl
