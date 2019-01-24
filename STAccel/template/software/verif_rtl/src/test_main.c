@@ -29,8 +29,8 @@
 
 void test_main(uint32_t *exit_code) {
 
-// Vivado does not support svGetScopeFromName
-//#ifdef INCLUDE_DPI_CALLS
+  // Vivado does not support svGetScopeFromName
+  //#ifdef INCLUDE_DPI_CALLS
 #ifndef VIVADO_SIM
   svScope scope;
 #endif
@@ -38,21 +38,18 @@ void test_main(uint32_t *exit_code) {
 
   uint32_t rdata;
 
-// Vivado does not support svGetScopeFromName
-//#ifdef INCLUDE_DPI_CALLS
+  // Vivado does not support svGetScopeFromName
+  //#ifdef INCLUDE_DPI_CALLS
 #ifndef VIVADO_SIM
   scope = svGetScopeFromName("tb");
   svSetScope(scope);
 #endif
-  int success = 1;
 
-  // PUT YOUR SIM LOGIC
-
-  if (success) {
-    log_printf("Test PASSED");
-  } else {
-    log_printf("Test FAILED");
-  }
+  simulator();
 
   *exit_code = 0;
+}
+
+void user_simulation_function() {
+  // PUT YOUR CODE HERE
 }
