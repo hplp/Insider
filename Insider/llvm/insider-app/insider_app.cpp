@@ -1,4 +1,6 @@
+#include <cstring>
 #include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <string>
@@ -22,6 +24,7 @@ static llvm::cl::OptionCategory
     STAccelCategory("Insider s2s transformer for apps");
 std::string topFuncName;
 bool catchTopFunc = false;
+bool enablePipelining = true;
 std::map<std::string, bool> ResetFifoMap;
 
 class RewritingVisitor : public RecursiveASTVisitor<RewritingVisitor> {
@@ -41,7 +44,10 @@ public:
         std::string text;
         text += "{\n" + beforeWhileText;
         text += "\nbool reset = false;\n unsigned reset_cnt = 0;\n";
-        text += "while (1) {\n #pragma HLS pipeline\n";
+        text += "while (1) {\n ";
+        if (enablePipelining) {
+          text += "#pragma HLS pipeline\n";
+        }
         text += "bool dummy;\n";
         text += "if (reset || (reset = reset_" + topFuncName +
                 ".read_nb(dummy))) {\n";
@@ -317,9 +323,34 @@ std::string getKernelName(std::string sourceFileName) {
   return sourceFileName.substr(lPos, rPos - lPos);
 }
 
-int main(int argc, const char **argv) {
-  topFuncName = getKernelName(std::string(argv[1]));
-  CommonOptionsParser op(argc, argv, STAccelCategory);
+bool judgeEnablePipelining(int *argc, char **filteredArgv) {
+  for (int i = 1; i < *argc; i++) {
+    if (strcmp(filteredArgv[i], "--disable_pipelining") == 0) {
+      for (int j = i + 1; j < *argc; j++) {
+        filteredArgv[j - 1] = filteredArgv[j];
+      }
+      (*argc)--;
+      return false;
+    }
+  }
+  return true;
+}
+
+char **duplicateArgv(int argc, char **argv) {
+  char **newArgv = new char *[argc];
+  for (int i = 0; i < argc; i++) {
+    newArgv[i] = argv[i];
+  }
+  return newArgv;
+}
+
+int main(int argc, char **argv) {
+  std::unique_ptr<char *> filteredArgv =
+      std::unique_ptr<char *>(duplicateArgv(argc, argv));
+  enablePipelining = judgeEnablePipelining(&argc, filteredArgv.get());
+  topFuncName = getKernelName(std::string(filteredArgv.get()[1]));
+  CommonOptionsParser op(argc, (const char **)(filteredArgv.get()),
+                         STAccelCategory);
   ClangTool Tool(op.getCompilations(), op.getSourcePathList());
   int ret = Tool.run(newFrontendActionFactory<MyFrontendAction>().get());
   if (!catchTopFunc) {

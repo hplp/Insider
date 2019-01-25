@@ -49,7 +49,7 @@ cp /usr/insider/cosim/kernels/* cosim/kernels
 
 for kernelSource in $kernelSources;
 do
-    insider_app kernels/$kernelSource -- -I/usr/include/staccel -I/usr/include/insider -I/usr/include/hls_csim -I inc \
+    insider_app $@ kernels/$kernelSource -- -I/usr/include/staccel -I/usr/include/insider -I/usr/include/hls_csim -I inc \
 	| clang-format --style=llvm 1>cosim/kernels/$kernelSource &
 done
 
