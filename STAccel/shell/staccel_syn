@@ -112,3 +112,8 @@ if [ $? -eq 0 ]; then
     find . -name "*.v" | grep ".srcs" | grep "/sim/" | xargs -I {} cp {} sim
     cd ../..
 fi
+
+cd project/design
+grep "readmem" * | cut  -d ':' -f 1 | xargs -I {} sed "s,\(readmemh(\"\)\./,\1`pwd`/,g" {}  -i
+cd ../../
+
