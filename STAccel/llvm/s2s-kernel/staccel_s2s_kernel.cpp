@@ -223,14 +223,20 @@ std::string getKernelName(std::string sourceFileName) {
   return sourceFileName.substr(lPos, rPos - lPos);
 }
 
+bool isProcessingHeader(std::string topFuncName) {
+  return topFuncName.find(".h") != std::string::npos;
+}
+
 int main(int argc, const char **argv) {
-  topFuncName = getKernelName(std::string(argv[1]));
+  std::string fileName = std::string(argv[1]);
+  topFuncName = getKernelName(fileName);
   CommonOptionsParser op(argc, argv, STAccelCategory);
   ClangTool Tool(op.getCompilations(), op.getSourcePathList());
   int ret = Tool.run(newFrontendActionFactory<InfoExtractionAction>().get());
-  if (!catchTopFunc) {
+  if (!catchTopFunc && !isProcessingHeader(fileName)) {
     llvm::errs() << "Error: In file " + std::string(argv[1]) +
-                        ": Cannot find the top function!\n";
+                        ": Cannot find the top function: "
+                 << topFuncName << "!\n";
     return -1;
   }
   if (ret) {

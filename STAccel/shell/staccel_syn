@@ -57,16 +57,28 @@ do
     cd build/$kernelName
     synthesis $kernelName
     staccel_s2s_kernel $fileName -- -I/usr/include/staccel -I/usr/include/insider -I/usr/include/hls_csim \
-	| clang-format --style=llvm 1>../interconnects/$fileName & pids_s2s+=($!)
+	| clang-format --style=llvm 1>../interconnects/$fileName & pids_s2s_kernel+=($!)
     cd ../..
 done
 
-wait "${pids_s2s[@]}"
+wait "${pids_s2s_kernel[@]}"
 
 staccel_s2s_interconnect interconnects.cpp -- -I/usr/include/staccel -I/usr/include/hls_csim -I/usr/include/insider -I inc -I kernels \
     | clang-format --style=llvm 1>build/interconnects/interconnects.cpp
-cp inc/* build/interconnects 1>/dev/null 2>&1
-cd build/interconnects
+mkdir build/interconnects/inc_tmp
+cp inc/* build/interconnects/inc_tmp 1>/dev/null 2>&1
+cd build/interconnects/inc_tmp
+
+for fileName in `ls`;
+do
+    newFileName=${fileName}.cpp
+    cp $fileName $newFileName
+    staccel_s2s_kernel $newFileName -- -Wno-pragma-once-outside-header -I/usr/include/staccel -I/usr/include/insider -I/usr/include/hls_csim \
+	| clang-format --style=llvm 1>../$fileName & pids_s2s_header+=($!)
+done
+
+wait "${pids_s2s_header[@]}"
+cd ..
 synthesis interconnects
 cd ../../
 wait
