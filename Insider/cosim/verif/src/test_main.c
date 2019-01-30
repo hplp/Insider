@@ -25,8 +25,8 @@
 #endif
 //#endif
 
-#include "insider_cosim.h"
 #include "sh_dpi_tasks.h"
+#include "insider_cosim.h"
 
 void test_main(uint32_t *exit_code) {
 
