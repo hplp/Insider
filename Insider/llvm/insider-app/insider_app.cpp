@@ -45,9 +45,9 @@ public:
         text += "{\n" + beforeWhileText;
         text += "\nbool reset = false;\n unsigned reset_cnt = 0;\n";
         text += "while (1) {\n ";
-        if (enablePipelining) {
-          text += "#pragma HLS pipeline\n";
-        }
+        // if (enablePipelining) {
+        //   text += "#pragma HLS pipeline\n";
+        // }
         text += "bool dummy;\n";
         text += "if (reset || (reset = reset_" + topFuncName +
                 ".read_nb(dummy))) {\n";
