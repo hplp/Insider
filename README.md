@@ -138,6 +138,7 @@ void kernel(
   // Define local variables that are alive across different while iterations.
   // Other type of code is not allowed before the while loop.
   while (1) {  // Must declare a while loop here.
+    #pragma HLS pipeline  // Pipeline the kernel while loop
     // Put your kernel logic inside the while loop which would be repeatedly invoked.
     // "break" and "continue" is not allowed inside the while loop.
   }
