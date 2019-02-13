@@ -1,6 +1,9 @@
 #ifndef INSIDER_RUNTIME_HPP
 #define INSIDER_RUNTIME_HPP
 
+#include <cstddef>
+#include <sys/types.h>
+
 extern "C" {
   void send_input_params(unsigned int data);
   void send_input_params_array(unsigned int *data_arr, size_t arr_len);
