@@ -12,6 +12,7 @@ void app_intg_writer(ST_Queue<unsigned int> &app_intg_writer_input_param,
   bool valid_param = false;
   unsigned int thres = 0;
   while (1) {
+#pragma HLS pipeline
     if (!valid_param) {
       unsigned int param;
       if (app_intg_writer_input_param.read_nb(param)) {

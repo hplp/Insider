@@ -9,6 +9,7 @@
 void app_intg_rdc_8to4(ST_Queue<APP_Reduce_Record8> &app_intg_rdc_input_8to4,
                        ST_Queue<APP_Reduce_Record4> &app_intg_rdc_input_4to2) {
   while (1) {
+#pragma HLS pipeline
     APP_Reduce_Record8 record_in;
 #pragma HLS array_partition variable = record_in.record complete
     APP_Reduce_Record4 record_out;

@@ -1,6 +1,8 @@
 #ifndef STRUCTURE_H_
 #define STRUCTURE_H_
 
+#include "constant.h"
+
 struct Grep_Input_Data {
   char data[MATCHING_VEC_SIZE];
   int col_indices[MATCHING_VEC_SIZE];

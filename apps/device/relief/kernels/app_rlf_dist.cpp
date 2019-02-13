@@ -17,6 +17,7 @@ void app_rlf_dist(ST_Queue<APP_Dist_Data> &app_rlf_dist_input_data,
 #pragma HLS array_partition variable = query cyclic factor = 16 dim = 2
 
   while (1) {
+#pragma HLS pipeline
     if (!valid_param) {
       unsigned int param;
       if (app_rlf_dist_input_params.read_nb(param)) {

@@ -14,6 +14,7 @@ void app_sql_input_parser(ST_Queue<APP_Data> &app_input_data,
 
   bool valid_filter_params = false;
   while (1) {
+#pragma HLS pipeline
     if (!valid_filter_params) {
       unsigned int input_param;
       if (app_input_params.read_nb(input_param)) {

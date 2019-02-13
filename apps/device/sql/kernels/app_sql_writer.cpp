@@ -16,6 +16,7 @@ void app_sql_writer(ST_Queue<SQL_Record> &app_sql_filter0_output_records,
   bool valid_record0 = false;
   bool valid_record1 = false;
   while (1) {
+#pragma HLS pipeline
     SQL_Record record0, record1, output_record0, output_record1;
     if (!valid_record0) {
       valid_record0 = app_sql_filter0_output_records.read_nb(record0);

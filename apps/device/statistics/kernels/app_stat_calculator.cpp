@@ -18,6 +18,7 @@ void app_stat_calculator(
   unsigned int min_vec[16];
   unsigned long long total_vec[16];
   while (1) {
+#pragma HLS pipeline
     if (!valid_param) {
       unsigned int param;
       if (app_input_params.read_nb(param)) {

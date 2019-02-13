@@ -20,6 +20,7 @@ void app_rlf_upd(ST_Queue<unsigned int> &app_rlf_upd_input_params,
 #pragma HLS array_partition variable = filter_param_out complete
 
   while (1) {
+#pragma HLS pipeline
     if (!validParam) {
       unsigned int param;
       if (app_rlf_upd_input_params.read_nb(param)) {

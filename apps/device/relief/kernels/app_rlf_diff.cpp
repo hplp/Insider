@@ -18,6 +18,7 @@ void app_rlf_diff(ST_Queue<unsigned int> &app_rlf_diff_input_params,
 #pragma HLS array_partition variable = query cyclic factor = 16 dim = 2
 
   while (1) {
+#pragma HLS pipeline
     if (!validParam) {
       unsigned int param;
       if (app_rlf_diff_input_params.read_nb(param)) {

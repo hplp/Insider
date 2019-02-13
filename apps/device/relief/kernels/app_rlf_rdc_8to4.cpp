@@ -10,6 +10,7 @@ void app_rlf_rdc_8to4(ST_Queue<APP_Reduce_Data8> &app_rlf_rdc_8to4_input_data,
                       ST_Queue<APP_Reduce_Data4> &app_rlf_rdc_4to2_input_data) {
 
   while (1) {
+#pragma HLS pipeline
     APP_Reduce_Data8 reduce8_in;
 #pragma HLS array_partition variable = reduce8_in.reduce complete dim = 0
 #pragma HLS array_partition variable = reduce8_in.data complete

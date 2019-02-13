@@ -17,6 +17,7 @@ void app_grep_matcher(ST_Queue<unsigned int> &app_input_params,
   unsigned int loading_grep_param_str_index = 0;
 
   while (1) {
+#pragma HLS pipeline
     if (!valid_grep_param_size) {
       if (app_input_params.read_nb(grep_param_size)) {
         valid_grep_param_size = true;

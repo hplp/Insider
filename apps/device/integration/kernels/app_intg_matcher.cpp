@@ -19,6 +19,7 @@ void app_intg_matcher(ST_Queue<unsigned int> &app_intg_input_params,
 #pragma HLS array_partition variable = query complete
   unsigned char record[APP_COL_NUM];
   while (1) {
+#pragma HLS pipeline
     if (!valid_param) {
       // state 0 -- get thres
       // state 1~8 -- get (8) 4B of query

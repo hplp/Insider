@@ -17,6 +17,7 @@ void app_grep_writer(ST_Queue<APP_Data> &app_output_data,
   int prev_row_index = -1;
 
   while (1) {
+#pragma HLS pipeline
     Matched_Pos matched_pos;
     if (app_grep_matched_pos_chan.read_nb(matched_pos)) {
       if (matched_pos.valid) {

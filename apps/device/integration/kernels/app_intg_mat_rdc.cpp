@@ -10,6 +10,7 @@ void app_intg_mat_rdc(
     ST_Queue<APP_Match> &app_intg_mat_rdc_input,
     ST_Queue<APP_Ver_Record> &app_intg_verifier_input_record) {
   while (1) {
+#pragma HLS pipeline
     APP_Match match_in;
     APP_Ver_Record record_out;
     if (app_intg_mat_rdc_input.read_nb(match_in)) {
@@ -18,13 +19,6 @@ void app_intg_mat_rdc(
 #pragma HLS unroll
         reduced_match = reduced_match | match_in.match[i];
       }
-      /*
-       reduced_match = match_in.match[0]
-           UNROLL(idx, 1, 31, 1) {
-               | match_in.match[idx]
-           }
-       | match_in.match[31];
-       */
       if (reduced_match) {
         for (int i = 0; i < 64; i++) {
           record_out.record[i] = match_in.record[i];

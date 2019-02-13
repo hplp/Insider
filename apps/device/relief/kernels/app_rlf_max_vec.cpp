@@ -23,6 +23,7 @@ void app_rlf_max_vec(ST_Queue<APP_Reduce_Data> &app_rlf_max_vec_input_data,
 #pragma HLS array_partition variable = stg_out.data complete dim = 1
 
   while (1) {
+#pragma HLS pipeline
     if (!validParam) {
       bool param;
       if (app_rlf_max_vec_init.read_nb(param)) {

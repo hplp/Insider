@@ -21,6 +21,7 @@ void app_rlf_dspt(ST_Queue<unsigned int> &app_rlf_input_params,
   unsigned int negSetNum = 0;
 
   while (1) {
+#pragma HLS pipeline
     if (!valid_param) {
       unsigned int param;
       if (app_rlf_input_params.read_nb(param)) {

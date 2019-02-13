@@ -16,6 +16,7 @@ void app_stat_writer(ST_Queue<APP_Scatter_Data2> &app_stat_writer_input,
   unsigned long long sum_buffer[4];
 #pragma HLS array_partition variable = sum_buffer complete
   while (1) {
+#pragma HLS pipeline
     APP_Scatter_Data2 data_in;
     if (app_stat_writer_input.read_nb(data_in)) {
       max_buffer[read_cnt] =

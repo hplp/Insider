@@ -18,6 +18,7 @@ void app_rlf_wr(ST_Queue<APP_Write_Data> &app_rlf_wr_input_data,
   int stgValidNum = 0;
 
   while (1) {
+#pragma HLS pipeline
     APP_Write_Data write_in;
 #pragma HLS array_partition variable = write_in.data complete
     if (app_rlf_wr_input_data.read_nb(write_in)) {

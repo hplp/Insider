@@ -12,6 +12,7 @@ void app_grep_input_preprocessor(
   int row_index = 0;
   int col_state_cnt = 0;
   while (1) {
+#pragma HLS pipeline
     APP_Data cur_input_data;
     if (app_input_data.read_nb(cur_input_data)) {
       char cur_input_data_in_bytes[DATA_BUS_WIDTH];

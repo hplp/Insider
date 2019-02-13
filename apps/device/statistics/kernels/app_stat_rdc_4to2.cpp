@@ -8,6 +8,7 @@
 void app_stat_rdc_4to2(ST_Queue<APP_Scatter_Data4> &app_stat_rdc_4to2_input,
                        ST_Queue<APP_Scatter_Data2> &app_stat_writer_input) {
   while (1) {
+#pragma HLS pipeline
     APP_Scatter_Data4 data_in;
     APP_Scatter_Data2 data_out;
     if (app_stat_rdc_4to2_input.read_nb(data_in)) {

@@ -20,11 +20,14 @@ void app_knn(ST_Queue<APP_Data> &app_input_data,
 #pragma HLS array_partition variable = result_arr complete dim = 1
   unsigned int dist_arr_idx = 0;
 
-  unsigned int dist = 0;
   unsigned int cnt_input_buf = 0;
   unsigned int cur_result;
   unsigned int predicting_vec_dim0_idx = 0;
+  unsigned int dist[(RESULT_SIZE + WEIGHT_SIZE * FEATURE_DIM) / DATA_BUS_WIDTH];
+#pragma HLS array_partition variable = dist complete dim = 0
+
   while (1) {
+#pragma HLS pipeline
     unsigned int input_param;
     if (!valid_predicting_vec) {
       if (app_input_params.read_nb(input_param)) {
@@ -49,22 +52,30 @@ void app_knn(ST_Queue<APP_Data> &app_input_data,
             weights[i] = input_app_data.data(i * 8 + 7, i * 8) - '0';
           }
 
+          unsigned int tmp_dist = 0;
           for (int i = 0; i < 64; i++) {
 #pragma HLS unroll
             char diff = (char)predicting_vec[predicting_vec_dim0_idx][i] -
                         (char)weights[i];
             unsigned char mul = diff * diff;
-            dist += mul;
+            tmp_dist += mul;
           }
+          dist[cnt_input_buf] = tmp_dist;
           predicting_vec_dim0_idx++;
         }
         cnt_input_buf++;
         if (cnt_input_buf ==
             (RESULT_SIZE + WEIGHT_SIZE * FEATURE_DIM) / DATA_BUS_WIDTH) {
-          dist_arr[dist_arr_idx] = dist;
+          unsigned int sum_dist = 0;
+          for (int i = 0;
+               i < (RESULT_SIZE + WEIGHT_SIZE * FEATURE_DIM) / DATA_BUS_WIDTH;
+               i++) {
+#pragma HLS pipeline
+            sum_dist += dist[i];
+          }
+          dist_arr[dist_arr_idx] = sum_dist;
           result_arr[dist_arr_idx] = cur_result;
           dist_arr_idx++;
-          dist = 0;
           cnt_input_buf = 0;
           predicting_vec_dim0_idx = 0;
           if (dist_arr_idx == DATA_BUS_WIDTH / sizeof(unsigned int) / 2) {

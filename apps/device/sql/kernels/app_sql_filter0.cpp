@@ -13,6 +13,7 @@ void app_sql_filter0(ST_Queue<Filter_Params> &app_sql_filter0_params,
   unsigned char year_upper_thresh;
   unsigned char year_lower_thresh;
   while (1) {
+#pragma HLS pipeline
     if (!valid_filter_params) {
       Filter_Params filter_params;
       if (app_sql_filter0_params.read_nb(filter_params)) {

@@ -23,6 +23,7 @@ void app_rlf_stg(ST_Queue<APP_Stg_Data> &app_rlf_stg_input_data,
 #pragma HLS array_partition variable = tmpVec cyclic factor = 2 dim = 2
 
   while (1) {
+#pragma HLS pipeline
     APP_Stg_Data stg_in;
 #pragma HLS array_partition variable = stg_in.data complete
     APP_Diff_Data diff_out;

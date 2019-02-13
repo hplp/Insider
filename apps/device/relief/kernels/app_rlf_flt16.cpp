@@ -15,6 +15,7 @@ void app_rlf_flt16(ST_Queue<APP_Flt_Param> &app_rlf_flt16_input_params,
 #pragma HLS array_partition variable = weight complete
 
   while (1) {
+#pragma HLS pipeline
     if (!validParam) {
       APP_Flt_Param param;
 #pragma HLS array_partition variable = param complete

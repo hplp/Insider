@@ -1,6 +1,8 @@
 #ifndef STRUCTURE_H_
 #define STRUCTURE_H_
 
+#include "constant.h"
+
 struct APP_Dist_Data {
   int data[16];
   bool posi;

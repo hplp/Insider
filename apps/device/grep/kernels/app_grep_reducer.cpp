@@ -8,6 +8,7 @@
 void app_grep_reducer(ST_Queue<Matching_Vec> &app_grep_matching_vecs,
                       ST_Queue<Matched_Pos> &app_grep_matched_pos_chan) {
   while (1) {
+#pragma HLS pipeline
     Matching_Vec matching_vec;
     if (app_grep_matching_vecs.read_nb(matching_vec)) {
       Matched_Pos matched_pos;

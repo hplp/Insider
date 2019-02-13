@@ -10,6 +10,7 @@ void app_intg_rdc_32to16(
     ST_Queue<APP_Reduce_Record32> &app_intg_rdc_input_32to16,
     ST_Queue<APP_Reduce_Record16> &app_intg_rdc_input_16to8) {
   while (1) {
+#pragma HLS pipeline
     APP_Reduce_Record32 record_in;
 #pragma HLS array_partition variable = record_in.record complete
     APP_Reduce_Record16 record_out;

@@ -10,6 +10,7 @@ void app_rlf_flt8(ST_Queue<APP_Flt_Data8> &app_rlf_flt8_input_data,
                   ST_Queue<APP_Flt_Data4> &app_rlf_flt4_input_data) {
 
   while (1) {
+#pragma HLS pipeline
     APP_Flt_Data8 filter8_in;
 #pragma HLS array_partition variable = filter8_in.data complete
 #pragma HLS array_partition variable = filter8_in.validNum complete

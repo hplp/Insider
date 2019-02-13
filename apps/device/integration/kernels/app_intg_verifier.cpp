@@ -15,6 +15,7 @@ void app_intg_verifier(
   unsigned char query[APP_QUERY_LENGTH];
 #pragma HLS array_partition variable = query complete
   while (1) {
+#pragma HLS pipeline
     if (!valid_param) {
       APP_Ver_Param param;
       if (app_intg_verifier_input_param.read_nb(param)) {
