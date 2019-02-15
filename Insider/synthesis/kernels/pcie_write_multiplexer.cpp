@@ -19,6 +19,7 @@ void pcie_write_multiplexer(
   // state = 2: outstanding req from host-side rdcmd_fin_pcie interface
   // state = 3: outstanding req from host-side wrcmd_fin_pcie interface
   // state = 4: outstanding req from device-side interface
+  // state = 5: waiting to read host_rdcmd_fin_pcie_write_req_apply
   unsigned char state = 0;
   unsigned char inflight_device_req_apply_num = 0;
 
@@ -27,21 +28,23 @@ void pcie_write_multiplexer(
     PCIe_Write_Req_Data write_data;
     if (state == 0) {
       PCIe_Write_Req_Apply req_apply;
-      /* fin interface has higher priority */
-      if (host_rdcmd_fin_pcie_write_req_apply.read_nb(req_apply)) {
-        state = 2;
-        pcie_write_req_apply.write(req_apply);
-      } else if (host_wrcmd_fin_pcie_write_req_apply.read_nb(req_apply)) {
+      // They have different priorities.
+      if (host_wrcmd_fin_pcie_write_req_apply.read_nb(req_apply)) {
         state = 3;
         pcie_write_req_apply.write(req_apply);
       } else if (host_data_pcie_write_req_apply.read_nb(req_apply)) {
         state = 1;
         pcie_write_req_apply.write(req_apply);
-
       } else if (device_pcie_write_req_apply.read_nb(req_apply)) {
         state = 4;
         pcie_write_req_apply.write(req_apply);
         inflight_device_req_apply_num = req_apply.num;
+      }
+    } else if (state == 5) {
+      PCIe_Write_Req_Apply req_apply;
+      if (host_rdcmd_fin_pcie_write_req_apply.read_nb(req_apply)) {
+        state = 2;
+        pcie_write_req_apply.write(req_apply);
       }
     }
 
@@ -49,7 +52,7 @@ void pcie_write_multiplexer(
       if (host_data_pcie_write_req_data.read_nb(write_data)) {
         pcie_write_req_data.write(write_data);
         if (write_data.last) {
-          state = 0;
+          state = 5;
         }
       }
     } else if (state == 2) {
