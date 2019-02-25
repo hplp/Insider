@@ -123,7 +123,7 @@ out:
 
 static void *allocate_kernel_buf(int *configfd) {
   void *address;
-  *configfd = open("/sys/kernel/debug/fpga_dma", O_RDWR);
+  *configfd = open("/dev/fpga_dma", O_RDWR);
   if (*configfd < 0) {
     perror("Error in dma driver.");
     exit(-1);
