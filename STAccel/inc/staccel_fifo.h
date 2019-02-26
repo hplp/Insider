@@ -27,10 +27,10 @@ ST_Queue<Dram_Write_Req_Data> dramD_write_req_data(1);
 ST_Queue<Dram_Write_Req_Apply> dramD_write_req_apply(1);
 
 // PCIe interface
-ST_Queue<PCIe_Read_Req> pcie_read_req(1);
-ST_Queue<PCIe_Read_Resp> pcie_read_resp(1);
-ST_Queue<PCIe_Write_Req_Data> pcie_write_req_data(1);
-ST_Queue<PCIe_Write_Req_Apply> pcie_write_req_apply(1);
+ST_Queue<PCIe_Read_Req> pcie_read_req(16);
+ST_Queue<PCIe_Read_Resp> pcie_read_resp(16);
+ST_Queue<PCIe_Write_Req_Data> pcie_write_req_data(16);
+ST_Queue<PCIe_Write_Req_Apply> pcie_write_req_apply(16);
 
 // Poke-Peek interface
 ST_Queue<Poke_Info> poke(1);
