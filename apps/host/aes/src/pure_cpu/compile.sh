@@ -1,3 +1,2 @@
 #!/bin/bash
-#g++ grep.cpp -O3 -o grep -std=c++11 -mcmodel=medium
-g++ main.cpp AESfunctions.h AEStables.h AESfunctions.cpp -O3 -o main_aes -std=c++11 -mcmodel=medium
+g++ AES.cpp AESfunctions.h AEStables.h AESfunctions.cpp -O3 -o aes_main -std=c++11 -mcmodel=medium

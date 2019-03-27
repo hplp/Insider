@@ -1,26 +1,26 @@
 #ifndef STRUCTURE_H_
 #define STRUCTURE_H_
 
-struct Grep_Input_Data {
-  char data[MATCHING_VEC_SIZE];
-  int col_indices[MATCHING_VEC_SIZE];
-  int row_index;
-  bool eop;
-};
+#include "constant.h"
 
-struct Matched_Pos {
-  int row_index;
-  int col_index;
-  bool eop;
-  bool valid;
-};
+typedef struct {
+  unsigned char data0;
+  unsigned char data1;
+  unsigned char data2;
+  unsigned char data3;
+  unsigned char data4;
+  unsigned char data5;
+  unsigned char data6;
+  unsigned char data7;
+  unsigned char data8;
+  unsigned char data9;
+  unsigned char data10;
+  unsigned char data11;
+  unsigned char data12;
+  unsigned char data13;
+  unsigned char data14;
+  unsigned char data15;
+} aes_inout;
 
-struct Matching_Vec {
-  bool matched[MATCHING_VEC_SIZE + COMPARE_CHUNK_SIZE - 1];
-  int row_index;
-  int col_indices[MATCHING_VEC_SIZE + COMPARE_CHUNK_SIZE - 1];
-  bool eop;
-  bool valid;
-};
 
 #endif

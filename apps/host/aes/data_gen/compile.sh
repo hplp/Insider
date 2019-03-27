@@ -5,5 +5,5 @@ if [ -e aes_input.txt ]
 then
     rm aes_input.txt
 else
-    echo "no aes_input.txt"
+    echo "no aes_input.txt to remove"
 fi

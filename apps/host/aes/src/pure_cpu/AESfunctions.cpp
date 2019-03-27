@@ -2,6 +2,7 @@
 
 #include "AESfunctions.h"
 #include "AEStables.h"
+#include "AESkeys.h"
 
 void KeyExpansionCore(unsigned char* in4, unsigned short i)
 {
@@ -171,28 +172,44 @@ void InvMixColumns(unsigned char* state) {
 }
 
 
-void AddRoundKey(unsigned char* state, unsigned char* roundKey)
-{
-    for (unsigned short i = 0; i < stt_lng; i++) { state[i] ^= roundKey[i]; }
+// void AddRoundKey(unsigned char* state, unsigned char* roundKey)
+// {
+//     for (unsigned short i = 0; i < stt_lng; i++) { state[i] ^= roundKey[i]; }
+// }
+void AddRoundKey(unsigned char* state, unsigned char Nr, unsigned char round) {
+    for (unsigned char i = 0; i < stt_lng; i++) {
+        switch (Nr) {
+        case 10:
+            state[i] ^= expandedKey128[round][i];
+            break;
+        case 12:
+            state[i] ^= expandedKey192[round][i];
+            break;
+        case 14:
+            state[i] ^= expandedKey256[round][i];
+            break;
+        }
+    }
 }
 
-
 // Cipher
-void AES_Encrypt(unsigned char* plaintext, unsigned char* expandedKey, unsigned short Nr, unsigned char* ciphertext)
+void AES_Encrypt(unsigned char* plaintext, unsigned short Nr, unsigned char* ciphertext)
 {
     // Copy plaintext into state
     unsigned char state[stt_lng];
     for (unsigned short i = 0; i < stt_lng; i++) { state[i] = plaintext[i]; }
 
     // Whitening
-    AddRoundKey(state, expandedKey + (stt_lng * 0)); // Round Key
+    //AddRoundKey(state, expandedKey + (stt_lng * 0)); // Round Key
+    AddRoundKey(state, Nr, 0);
 
     for (unsigned short i = 0; i < Nr; i++)
     {
         SubBytes(state);
         ShiftRows(state);
         if (i != (Nr - 1)) { MixColumns(state); }
-        AddRoundKey(state, expandedKey + (stt_lng * (i + 1))); // Round Key
+        //AddRoundKey(state, expandedKey + (stt_lng * (i + 1))); // Round Key
+        AddRoundKey(state, Nr, i + 1);
     }
 
     // Copy state to ciphertext
@@ -200,19 +217,21 @@ void AES_Encrypt(unsigned char* plaintext, unsigned char* expandedKey, unsigned 
 }
 
 // Inverse Cipher
-void AES_Decrypt(unsigned char* ciphertext, unsigned char* expandedKey, unsigned short Nr, unsigned char* plaintext)
+void AES_Decrypt(unsigned char* ciphertext, unsigned short Nr, unsigned char* plaintext)
 {
     // copy ciphertext into state
     unsigned char state[stt_lng];
     for (unsigned short i = 0; i < stt_lng; i++) { state[i] = ciphertext[i]; }
 
-    AddRoundKey(state, expandedKey + (stt_lng * Nr));  // Round Key
+    //AddRoundKey(state, expandedKey + (stt_lng * Nr));  // Round Key
+    AddRoundKey(state, Nr, Nr);
 
     for (unsigned short i = 0; i < Nr; i++)
     {
         InvShiftRows(state);
         InvSubBytes(state);
-        AddRoundKey(state, expandedKey + (stt_lng * (Nr - i - 1)));  // Round Key
+        //AddRoundKey(state, expandedKey + (stt_lng * (Nr - i - 1)));  // Round Key
+        AddRoundKey(state, Nr, Nr - i - 1);
         if (i != (Nr - 1)) { InvMixColumns(state); }
     }
 
