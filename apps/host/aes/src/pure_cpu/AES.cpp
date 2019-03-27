@@ -15,7 +15,7 @@
 
 using namespace std;
 
-unsigned char buf[FILE_ROW_NUM][FILE_COL_NUM+1];
+unsigned char buf[FILE_ROW_NUM][FILE_COL_NUM];
 unsigned short Nr[MAX_AES_Nr_PARAM_SIZE];
 
 class Timer {
@@ -39,7 +39,7 @@ void read_data(void) {
   unsigned char *read_buf = (unsigned char *)&buf;
   int read_buf_cnt = 0;
 
-  while (read_buf_cnt != (unsigned long)(FILE_ROW_NUM * (FILE_COL_NUM+1) / READ_BUF_SIZE)) {
+  while (read_buf_cnt != (int)READ_BUF_ITERATIONS) {
     int read_bytes = 0;
 //    cout << "read_buf_cnt=" << read_buf_cnt << endl;
     while (read_bytes != READ_BUF_SIZE) {
@@ -70,16 +70,17 @@ void encrypting()
 {
   for (int i = 0; i < FILE_ROW_NUM; i++)
   {
-    unsigned char plaintext[FILE_COL_NUM];
-    unsigned char ciphertext[FILE_COL_NUM];
-    //unsigned char d_plaintext[FILE_COL_NUM];
-    for (int j = 0; j < FILE_COL_NUM; j++)
+    unsigned char plaintext[FILE_COL_NUM-1];
+    unsigned char ciphertext[FILE_COL_NUM-1];
+    //unsigned char d_plaintext[FILE_COL_NUM-1];
+    for (int j = 0; j < FILE_COL_NUM-1; j++)
     {
       plaintext[j] = buf[i][j];
     }
+    //cout << plaintext << endl;
     AES_Encrypt(plaintext, Nr[i % MAX_AES_Nr_PARAM_SIZE], ciphertext);
-    //AES_Decrypt(ciphertext, Nr[i], d_plaintext);
-    //cout << d_plaintext << endl;
+    //AES_Decrypt(ciphertext, Nr[i % MAX_AES_Nr_PARAM_SIZE], d_plaintext);
+    //cout << "D:" << d_plaintext << endl;
   }
 }
 
@@ -87,9 +88,9 @@ void decrypting()
 {
   for (int i = 0; i < FILE_ROW_NUM; i++)
   {
-    unsigned char ciphertext[FILE_COL_NUM];
-    unsigned char d_plaintext[FILE_COL_NUM];
-    for (int j = 0; j < FILE_COL_NUM; j++)
+    unsigned char ciphertext[FILE_COL_NUM-1];
+    unsigned char d_plaintext[FILE_COL_NUM-1];
+    for (int j = 0; j < FILE_COL_NUM-1; j++)
     {
       ciphertext[j] = buf[i][j];
     }

@@ -21,7 +21,7 @@ int main() {
 
   for (long i = 0; i < FILE_ROW_NUM; i++) {
     string line = "";
-    for (int j = 0; j < FILE_COL_NUM; j++) {
+    for (int j = 0; j < FILE_COL_NUM - 1; j++) {
       line += random_char();
     }
     cout << line << endl;
