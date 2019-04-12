@@ -1,6 +1,4 @@
 #include "../../inc/const.h"
-#include "AESfunctions.h"
-
 #include <cassert>
 #include <chrono>
 #include <cstdio>
@@ -11,12 +9,14 @@
 #include <queue>
 #include <unistd.h>
 
+#include <insider_runtime.hpp>
+#include <stdio.h>
+#include <time.h>
 //#define NDEBUG
 
 using namespace std;
 
-unsigned char buf[FILE_ROW_NUM][FILE_COL_NUM];
-unsigned short Nr[MAX_AES_Nr_PARAM_SIZE];
+int fd;
 
 class Timer {
 public:
@@ -34,6 +34,9 @@ private:
   typedef std::chrono::duration<double, std::ratio<1>> second_;
   std::chrono::time_point<clock_> m_beg;
 };
+
+// TODO
+// This is same as pure CPU for now
 
 void read_data(void) {
   // int fd = open("/mnt/aes_input.txt", O_RDONLY);

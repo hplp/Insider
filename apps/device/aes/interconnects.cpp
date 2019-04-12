@@ -3,21 +3,15 @@
 #include "constant.h"
 #include "structure.h"
 
-//#include "app_grep_input_preprocessor.cpp"
-//#include "app_grep_matcher.cpp"
-//#include "app_grep_reducer.cpp"
-//#include "app_grep_writer.cpp"
+#include "app_AES_writer.cpp"
 
 void interconnects() {
 
-  ST_Queue<AES_Input_Data> app_aes_input_data_chan(16);
-  // ST_Queue<Matched_Pos> app_aes_matched_pos_chan(64);
-  // ST_Queue<Matching_Vec> app_grep_matching_vecs(16);
-  // ST_Queue<Matching_Vec> app_grep_scanned_matching_vecs(16);
+  ST_Queue<aes_inout> app_aes_input_data_chan(16);
+  ST_Queue<aes_inout> app_aes_output_data_chan(16);
 
   app_aes_input_preprocessor(app_input_data, app_aes_input_data_chan);
-  // app_grep_matcher(app_input_params, app_grep_input_data_chan,
-  //                  app_grep_matching_vecs);
-  // app_grep_reducer(app_grep_matching_vecs, app_grep_matched_pos_chan);
-  // app_grep_writer(app_output_data, app_grep_matched_pos_chan);
+  app_aes_do(app_input_params, app_aes_input_data_chan, app_aes_output_data_chan);
+  app_aes_writer(app_output_data, app_aes_output_data_chan);
+
 }

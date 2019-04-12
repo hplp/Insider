@@ -3,7 +3,7 @@
 
 #include "constant.h"
 
-typedef struct {
+struct aes_inout {
   unsigned char data0;
   unsigned char data1;
   unsigned char data2;
@@ -20,7 +20,7 @@ typedef struct {
   unsigned char data13;
   unsigned char data14;
   unsigned char data15;
-} aes_inout;
-
+  bool eop;
+};
 
 #endif
