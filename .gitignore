@@ -1,9 +1,9 @@
 staccel/
 staccel.old/
 
-apps/host/aes/data_gen/aes_input.txt
-apps/host/aes/data_gen/data_gen
-apps/host/aes/src/aes_input.txt
-apps/host/aes/src/pure_cpu/aes_main
+apps/host/myaes/data_gen/aes_input.txt
+apps/host/myaes/data_gen/data_gen
+apps/host/myaes/src/aes_input.txt
+apps/host/myaes/src/pure_cpu/aes_main
 apps/host/grep/data_gen/data_gen
 
