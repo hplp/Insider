@@ -4,7 +4,7 @@
 
 ## Table of Contents
 
-- [NAME REMOVE FOR BLIND REVIEW](#insider)
+- [Insider](#insider)
   * [Paper](#paper)
   * [Restrictions](#restrictions)
   * [Preliminaries](#preliminaries)
